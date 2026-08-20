@@ -1,28 +1,41 @@
-% backend/prolog/server.pl
-% Starts the HTTP server and wires up every feature's routes.
-% Run with: swipl backend/prolog/server.pl  → API live on http://localhost:4000
-
 :- use_module(library(http/thread_httpd)).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_json)).
-:- use_module(library(http/http_parameters)).
-:- use_module(library(http/http_cors)).   % allow the React dev server to call this API
-:- use_module(library(yall)).             % lambda syntax ([X,Y]>>Goal) used in neighbor_game routes
+:- use_module(library(http/http_cors)).
 
-:- [kb].   % facts.pl, core.pl, and every feature's rules.pl
+:- set_setting(http:cors, [*]). % Allow CORS from any origin for development
 
-% Each feature owns its own route file — adding a feature means adding one
-% line here, not editing someone else's routes (docs/03 §2).
-:- ['features/explore_map/routes'].
-:- ['features/journey_mode/routes'].
-:- ['features/guess_game/routes'].
-:- ['features/neighbor_game/routes'].
-:- ['features/capital_match/routes'].
-:- ['features/explain_mode/routes'].
-:- ['features/dashboard/routes'].
+:- [kb].
 
-:- initialization(main).
+% Routes
+:- http_handler(root('country/'), get_country_info, []).
+:- http_handler(root('guess'), guess_handler, []).
+:- http_handler(root('neighbor_check'), neighbor_check_handler, []).
 
-main :-
-    http_server(http_dispatch, [port(4000)]),
-    format("ASEAN Explorer backend listening on http://localhost:4000~n").
+% Start Server on port 4000
+server(Port) :-
+    http_server(http_dispatch, [port(Port)]).
+
+start_server :-
+    server(4000).
+
+% /country/:name - Implemented
+% Assumes country_info/2 is defined in rules.pl by teammates, returning a dict
+get_country_info(Request) :-
+    cors_enable,
+    member(path(Path), Request),
+    atomic_list_concat(['', 'country', CountryNameAtom], '/', Path),
+    (   country_info(CountryNameAtom, InfoDict)
+    ->  reply_json_dict(InfoDict)
+    ;   reply_json_dict(_{error: "Country not found"}, [status(404)])
+    ).
+
+% /guess - Placeholder for teammates
+guess_handler(_Request) :-
+    cors_enable,
+    reply_json_dict(_{error: "Not implemented"}, [status(501)]).
+
+% /neighbor_check - Placeholder for teammates
+neighbor_check_handler(_Request) :-
+    cors_enable,
+    reply_json_dict(_{error: "Not implemented"}, [status(501)]).
