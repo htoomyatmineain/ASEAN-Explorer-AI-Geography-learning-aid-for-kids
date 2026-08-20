@@ -8,7 +8,7 @@
 :- [kb].
 
 % Routes
-:- http_handler(root('country/'), get_country_info, []).
+:- http_handler(root(country/Name), handle_country(Name), []).
 :- http_handler(root('guess'), guess_handler, []).
 :- http_handler(root('neighbor_check'), neighbor_check_handler, []).
 
@@ -20,14 +20,17 @@ start_server :-
     server(4000).
 
 % /country/:name - Implemented
-% Assumes country_info/2 is defined in rules.pl by teammates, returning a dict
-get_country_info(Request) :-
+handle_country(NameAtom, _Request) :-
     cors_enable,
-    member(path(Path), Request),
-    atomic_list_concat(['', 'country', CountryNameAtom], '/', Path),
-    (   country_info(CountryNameAtom, InfoDict)
-    ->  reply_json_dict(InfoDict)
-    ;   reply_json_dict(_{error: "Country not found"}, [status(404)])
+    catch(
+        ( country_info(NameAtom, card(NameAtom, Capital, Currency, Flag, Region, IsMember, Facts)) ->
+            reply_json_dict(_{ country: NameAtom, capital: Capital, currency: Currency,
+                                flag: Flag, region: Region, asean_member: IsMember,
+                                famous_for: Facts })
+        ; reply_json_dict(_{ error: "Country not found" }, [status(404)])
+        ),
+        error(existence_error(procedure, _), _),
+        reply_json_dict(_{ error: "Backend logic not yet available" }, [status(503)])
     ).
 
 % /guess - Placeholder for teammates

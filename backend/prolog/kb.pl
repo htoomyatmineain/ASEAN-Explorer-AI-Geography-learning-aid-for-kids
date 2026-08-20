@@ -1,2 +1,2 @@
 % Single load point for the KB
-:- [facts, rules, session].
+:- [core, facts, rules, session].

@@ -4,16 +4,16 @@ const GameContext = createContext();
 
 export const GameProvider = ({ children }) => {
   const [scores, setScores] = useState({
-    explore: 0,
-    guessCountry: 0,
-    neighborQuiz: 0,
-    capitalMatch: 0,
+    countries_and_capitals: 0,
+    neighboring_countries: 0,
+    asean_membership: 0,
+    flags_and_currencies: 0,
   });
 
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [activeGameState, setActiveGameState] = useState(null);
   const [weakestTopic, setWeakestTopic] = useState('none');
-  const [recommendedActivity, setRecommendedActivity] = useState('ExploreASEAN');
+  const [recommendedActivity, setRecommendedActivity] = useState('explore_asean_game');
 
   const updateScore = (topic, newScore) => {
     setScores(prev => ({ ...prev, [topic]: newScore }));
