@@ -7,13 +7,15 @@ function App() {
   return (
     <GameProvider>
       <BrowserRouter>
-        <Layout>
-          <Routes>
-            {routes.map(({ path, element: Element }) => (
-              <Route key={path} path={path} element={<Element />} />
-            ))}
-          </Routes>
-        </Layout>
+        <Routes>
+          {routes.map(({ path, element: Element, bare }) => (
+            <Route
+              key={path}
+              path={path}
+              element={bare ? <Element /> : <Layout><Element /></Layout>}
+            />
+          ))}
+        </Routes>
       </BrowserRouter>
     </GameProvider>
   );
