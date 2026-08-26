@@ -6,6 +6,7 @@ import GuessCountryPage from '../features/guess-game/GuessCountry.page';
 import NeighborQuizPage from '../features/neighbor-game/NeighborQuiz.page';
 import CapitalMatchPage from '../features/capital-match/CapitalMatch.page';
 import DashboardPage from '../features/dashboard/Dashboard.page';
+import SettingsPage from '../features/settings/Settings.page';
 
 // One entry per feature page — adding a feature means adding one line here,
 // not editing a shared router file's internals.
@@ -20,4 +21,5 @@ export const routes = [
   { path: '/neighbors', element: NeighborQuizPage },
   { path: '/capitals', element: CapitalMatchPage },
   { path: '/dashboard', element: DashboardPage },
+  { path: '/settings', element: SettingsPage },
 ];
