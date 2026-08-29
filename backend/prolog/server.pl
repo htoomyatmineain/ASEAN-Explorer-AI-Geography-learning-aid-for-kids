@@ -22,15 +22,11 @@ start_server :-
 % /country/:name - Implemented
 handle_country(NameAtom, _Request) :-
     cors_enable,
-    catch(
-        ( country_info(NameAtom, card(NameAtom, Capital, Currency, Flag, Region, IsMember, Facts)) ->
-            reply_json_dict(_{ country: NameAtom, capital: Capital, currency: Currency,
-                                flag: Flag, region: Region, asean_member: IsMember,
-                                famous_for: Facts })
-        ; reply_json_dict(_{ error: "Country not found" }, [status(404)])
-        ),
-        error(existence_error(procedure, _), _),
-        reply_json_dict(_{ error: "Backend logic not yet available" }, [status(503)])
+    ( country_info(NameAtom, card(NameAtom, Capital, Currency, Flag, Region, IsMember, Facts)) ->
+        reply_json_dict(_{ country: NameAtom, capital: Capital, currency: Currency,
+                            flag: Flag, region: Region, asean_member: IsMember,
+                            famous_for: Facts })
+    ; reply_json_dict(_{ error: "Country not found" }, [status(404)])
     ).
 
 % /guess - Placeholder for teammates
