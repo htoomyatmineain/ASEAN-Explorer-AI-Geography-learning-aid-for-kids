@@ -1,0 +1,12 @@
+/* Shared colors/fonts for the cartoon look — imported once from src/index.css. */
+:root {
+  --color-asean-blue: #0ea5e9;
+  --color-asean-red: #ef4444;
+  --color-asean-yellow: #facc15;
+  --color-bg: #fefce8;
+}
+
+body {
+  background-color: var(--color-bg);
+  font-family: 'Baloo 2', 'Comic Sans MS', system-ui, sans-serif;
+}

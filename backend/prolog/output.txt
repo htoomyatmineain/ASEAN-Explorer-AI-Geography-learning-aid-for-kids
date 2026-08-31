@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 === Person 4 sector — shared KB sanity ===
 
 1. asean_country(thailand).
@@ -36,3 +37,21 @@ incorrect
 10
 
 === done ===
+=======
+1. asean_country(thailand).
+true
+2. asean_country(china).
+false
+3. capital(vietnam, C), writeln(C).
+hanoi
+4. neighbor(myanmar, X), writeln(X).
+[thailand,laos,china,india,bangladesh]
+5. is_landlocked(laos).
+true
+6. same_subregion(thailand, vietnam).
+true
+7. same_subregion(thailand, singapore).
+false
+8. findall(C, country(C), Cs), length(Cs, N), writeln(N).
+15
+>>>>>>> origin/dev
