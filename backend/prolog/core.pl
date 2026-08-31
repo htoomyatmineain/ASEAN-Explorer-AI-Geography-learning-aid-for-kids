@@ -1,0 +1,1 @@
+﻿asean_country(Country) :- member(Country, [myanmar, thailand, laos, vietnam, cambodia, malaysia, singapore, indonesia, philippines, brunei]).
