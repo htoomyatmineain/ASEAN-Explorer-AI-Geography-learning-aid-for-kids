@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { GameProvider } from '../shared/state/GameContext';
-import Layout from '../shared/components/Layout/Layout';
+import Layout from '../features/main-menu/components/Layout';
 import { routes } from './routes';
 
 function App() {
