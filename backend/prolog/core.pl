@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-﻿asean_country(Country) :- member(Country, [myanmar, thailand, laos, vietnam, cambodia, malaysia, singapore, indonesia, philippines, brunei]).
-=======
 % backend/prolog/core.pl
 % Shared reasoning — §4.1 of docs/01-asean-explorer-prolog-kb.md
 % Every feature's rules.pl builds on these; keep this file feature-agnostic.
@@ -36,4 +33,3 @@ same_subregion(A, B) :-
 
 is_landlocked(Country) :-
     landlocked(Country).
->>>>>>> origin/dev
