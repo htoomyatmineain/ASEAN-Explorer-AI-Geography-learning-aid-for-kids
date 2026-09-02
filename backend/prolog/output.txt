@@ -1,43 +1,3 @@
-<<<<<<< HEAD
-=== Person 4 sector — shared KB sanity ===
-
-1. asean_country(thailand).
-true
-2. findall(X, neighbor(myanmar, X), N) — expect no duplicates from facts:
-[thailand,laos,china,india,bangladesh,thailand,laos]
-
-=== Feature 4 — Who Is My Neighbor? (rules.pl, KB doc 4.4) ===
-
-3. find_non_neighbors(myanmar, [china, india, bangladesh, thailand, laos, vietnam], X).
-   KB doc 5.3 expects X = [vietnam]
-[vietnam]
-4. neighbors_of(myanmar, N).
-   KB doc 5.3 expects N = [thailand, laos, china, india, bangladesh]
-[thailand,laos,china,india,bangladesh]
-5. is_real_neighbor(myanmar, thailand). — expect true
-true
-6. is_real_neighbor(myanmar, vietnam). — expect false
-false
-7. find_non_neighbors(singapore, [thailand, vietnam, indonesia], X). — expect all three (Singapore has no land borders)
-[thailand,vietnam,indonesia]
-8. find_non_neighbors(brunei, [malaysia, indonesia, thailand], X). — expect [thailand]
-[thailand]
-
-=== Feature 5 — Match the Capitals (rules.pl, KB doc 4.5) ===
-
-9. check_capital_match(vietnam, hanoi, R). — expect R = correct
-correct
-10. check_capital_match(vietnam, manila, R). — expect R = incorrect
-incorrect
-11. check_capital_match(cambodia, phnom_penh, R). — expect R = correct
-correct
-12. check_capital_match(brunei, kuala_lumpur, R). — expect R = incorrect
-incorrect
-13. findall(C, country(C), Cs), length(Cs, N). — expect N = 10 ASEAN countries
-10
-
-=== done ===
-=======
 1. asean_country(thailand).
 true
 2. asean_country(china).
@@ -54,4 +14,3 @@ true
 false
 8. findall(C, country(C), Cs), length(Cs, N), writeln(N).
 15
->>>>>>> origin/dev

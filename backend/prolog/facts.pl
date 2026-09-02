@@ -1,3 +1,5 @@
+:- encoding(utf8).
+
 % static facts from KB doc §3.1–3.10 — verbatim, do not alter
 
 % ── §3.1 Countries & ASEAN Membership ──────────────────────────────
