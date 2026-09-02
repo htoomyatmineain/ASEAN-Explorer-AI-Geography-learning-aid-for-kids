@@ -8,5 +8,6 @@
 
 body {
   background-color: var(--color-bg);
-  font-family: 'Baloo 2', 'Comic Sans MS', system-ui, sans-serif;
+  font-family: 'Cherry Bomb One', 'Comic Sans MS', system-ui, sans-serif;
+  color: #ffffff;
 }

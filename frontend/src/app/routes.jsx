@@ -1,6 +1,7 @@
 import HomePage from '../features/home/Home.page';
-import CardSelectionPage from '../features/card-selection/CardSelection.page';
-import ExploreASEANPage from '../features/explore-map/ExploreASEAN.page';
+import MainMenuPage from '../features/main-menu/MainMenu.page';
+import PracticeSelectionPage from '../features/practice-selection/PracticeSelection.page';
+import LearningPage from '../features/learning/Learning.page';
 import JourneyPage from '../features/journey-mode/Journey.page';
 import GuessCountryPage from '../features/guess-game/GuessCountry.page';
 import NeighborQuizPage from '../features/neighbor-game/NeighborQuiz.page';
@@ -14,8 +15,9 @@ import SettingsPage from '../features/settings/Settings.page';
 // like the entrance page.
 export const routes = [
   { path: '/', element: HomePage, bare: true },
-  { path: '/card-selection', element: CardSelectionPage },
-  { path: '/explore', element: ExploreASEANPage },
+  { path: '/main-menu', element: MainMenuPage },
+  { path: '/practice', element: PracticeSelectionPage },
+  { path: '/explore', element: LearningPage },
   { path: '/journey', element: JourneyPage },
   { path: '/guess', element: GuessCountryPage },
   { path: '/neighbors', element: NeighborQuizPage },
