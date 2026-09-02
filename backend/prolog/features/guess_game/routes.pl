@@ -9,6 +9,7 @@
 %                     {"type": "famous_for", "value": "elephants"},
 %                     {"type": "borders", "value": "myanmar"} ] }
 handle_guess(Request) :-
+    cors_enable,
     http_read_json_dict(Request, Body),
     Clues = Body.get(clues),
     parse_clues(Clues, ParsedClues),

@@ -12,24 +12,7 @@ country_info(Country, card(Country, Capital, Currency, FlagEmoji, Region, IsMemb
     ( asean_country(Country) -> IsMember = yes ; IsMember = no ),
     findall(F, famous_for(Country, F), Facts).
 
-% ============================================================
-% Person #4: Who Is My Neighbor + Match the Capitals
-% ============================================================
-
-% find_non_neighbors/3
-find_non_neighbors(_, [], []).
-find_non_neighbors(Country, [C|Rest], NonNeighbors) :-
-    (   neighbor(Country, C)
-    ->  find_non_neighbors(Country, Rest, NonNeighbors)
-    ;   NonNeighbors = [C|RestNon],
-        find_non_neighbors(Country, Rest, RestNon)
-    ).
-
-% check_capital_match/3
-check_capital_match(Country, Capital, correct) :-
-    capital(Country, Capital).
-
-check_capital_match(Country, Capital, incorrect) :-
-    country(Country),
-    capital(Country, _),
-    \+ capital(Country, Capital).
+% find_non_neighbors/3 and check_capital_match/3 used to be duplicated here
+% and in their own feature files. The feature files (loaded via kb.pl) are
+% now the single source of truth — see backend/prolog/features/neighbor_game/
+% rules.pl and backend/prolog/features/capital_match/rules.pl.
