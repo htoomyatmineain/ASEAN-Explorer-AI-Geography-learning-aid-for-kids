@@ -6,6 +6,7 @@
 
 % GET /explain/neighbor?a=myanmar&b=thailand
 handle_explain_neighbor(Request) :-
+    cors_enable,
     http_parameters(Request, [ a(AStr, []), b(BStr, []) ]),
     atom_string(A, AStr),
     atom_string(B, BStr),
@@ -14,6 +15,7 @@ handle_explain_neighbor(Request) :-
 
 % GET /explain/membership?country=singapore
 handle_explain_membership(Request) :-
+    cors_enable,
     http_parameters(Request, [ country(CStr, []) ]),
     atom_string(Country, CStr),
     explain_membership(Country, Explanation),
