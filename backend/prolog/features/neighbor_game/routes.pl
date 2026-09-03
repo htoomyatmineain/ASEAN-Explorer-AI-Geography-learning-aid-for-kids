@@ -7,6 +7,7 @@
 % Body: { "country": "myanmar", "candidates": ["china", "india", "bangladesh",
 %                                               "thailand", "laos", "vietnam"] }
 handle_neighbor_check(Request) :-
+    cors_enable,
     http_read_json_dict(Request, Body),
     atom_string(Country, Body.get(country)),
     maplist([S,A]>>atom_string(A,S), Body.get(candidates), Candidates),

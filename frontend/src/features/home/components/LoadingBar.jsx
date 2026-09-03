@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
 
 // Shown after the "Press ANY key to start" prompt is triggered — fills once,
-// then hands off to onComplete (the entrance page navigates to /card-selection).
-const LOAD_DURATION_SECONDS = 2.5;
+// then hands off to onComplete (the entrance page navigates to /main-menu).
+const LOAD_DURATION_SECONDS = 1.2;
 
 function LoadingBar({ onComplete }) {
   return (

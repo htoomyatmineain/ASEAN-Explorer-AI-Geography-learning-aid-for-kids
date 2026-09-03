@@ -41,7 +41,7 @@ function HomePage() {
       {/* Press-start prompt / loading bar, anchored to the bottom-middle of the page. */}
       <div className="absolute bottom-10 left-1/2 flex -translate-x-1/2 justify-center sm:bottom-16">
         {started ? (
-          <LoadingBar onComplete={() => navigate('/card-selection')} />
+          <LoadingBar onComplete={() => navigate('/main-menu')} />
         ) : (
           <PressStartPrompt onTrigger={() => setStarted(true)} />
         )}

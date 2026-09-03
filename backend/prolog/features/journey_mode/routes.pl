@@ -6,4 +6,5 @@
 
 % GET /journey/status
 handle_journey_status(_Request) :-
+    cors_enable,
     reply_json_dict(_{ error: "journey mode not implemented yet" }, [status(501)]).

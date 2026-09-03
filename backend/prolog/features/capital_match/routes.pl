@@ -6,6 +6,7 @@
 % POST /capital_match
 % Body: { "country": "vietnam", "guessed_city": "hanoi" }
 handle_capital_match(Request) :-
+    cors_enable,
     http_read_json_dict(Request, Body),
     atom_string(Country, Body.get(country)),
     atom_string(GuessedCity, Body.get(guessed_city)),

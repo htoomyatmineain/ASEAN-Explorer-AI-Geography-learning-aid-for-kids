@@ -8,6 +8,7 @@
 % POST /score
 % Body: { "topic": "neighboring_countries", "score": 40 }
 handle_set_score(Request) :-
+    cors_enable,
     http_read_json_dict(Request, Body),
     atom_string(Topic, Body.get(topic)),
     Score = Body.get(score),
@@ -16,6 +17,7 @@ handle_set_score(Request) :-
 
 % GET /recommend
 handle_recommend(_Request) :-
+    cors_enable,
     ( recommend_activity(Activity) ->
         weakest_topic(Topic),
         reply_json_dict(_{ weakest_topic: Topic, recommended_activity: Activity })
@@ -24,5 +26,6 @@ handle_recommend(_Request) :-
 
 % GET /scores — full topic-by-topic breakdown for the ScoreDashboard component
 handle_all_scores(_Request) :-
+    cors_enable,
     findall(_{ topic: Topic, score: Score }, student_score(Topic, Score), Scores),
     reply_json_dict(_{ scores: Scores }).
