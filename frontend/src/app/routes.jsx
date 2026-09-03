@@ -17,7 +17,9 @@ export const routes = [
   { path: '/', element: HomePage, bare: true },
   { path: '/main-menu', element: MainMenuPage },
   { path: '/practice', element: PracticeSelectionPage },
-  { path: '/explore', element: LearningPage },
+  // bare: true — the Learning page builds its own full-page header/map
+  // layout instead of the shared slim-header Layout.
+  { path: '/explore', element: LearningPage, bare: true },
   { path: '/journey', element: JourneyPage },
   { path: '/guess', element: GuessCountryPage },
   { path: '/neighbors', element: NeighborQuizPage },
