@@ -5,12 +5,22 @@ import CountryDragCard from './CountryDragCard';
 import CapitalDropTarget from './CapitalDropTarget';
 import { checkCapitalMatch } from '../capitalMatchApi';
 import { KIKO } from '../../guess-game/clueOptions';
+import { useGame } from '../../../shared/state/GameContext';
+import { setTopicScore as postTopicScore } from '../../dashboard/dashboardApi';
 
-// A small round — country atoms and capitals must match backend/prolog/facts.pl.
-const ROUND = [
+// One board with all 10 ASEAN countries (Indonesia included) — country atoms
+// and capitals must match backend/prolog/facts.pl.
+const ALL_PAIRS = [
   { country: 'vietnam', capital: 'hanoi' },
   { country: 'thailand', capital: 'bangkok' },
   { country: 'laos', capital: 'vientiane' },
+  { country: 'indonesia', capital: 'jakarta' },
+  { country: 'myanmar', capital: 'naypyidaw' },
+  { country: 'cambodia', capital: 'phnom_penh' },
+  { country: 'brunei', capital: 'bandar_seri_begawan' },
+  { country: 'malaysia', capital: 'kuala_lumpur' },
+  { country: 'singapore', capital: 'singapore_city' },
+  { country: 'philippines', capital: 'manila' },
 ];
 
 // Capitals are shuffled per round so the answer isn't the same row position
@@ -20,7 +30,7 @@ function shuffle(items) {
 }
 
 function mascotLine(selectedCountry, matchedCount, allMatched, isChecking, feedback) {
-  if (allMatched) return 'All three pairs matched — amazing job!';
+  if (allMatched) return 'All 10 capitals matched — amazing job!';
   if (isChecking) return 'Let me check the map…';
   if (feedback && feedback.result === 'incorrect') return "Oops, that's not right — try another one!";
   if (selectedCountry) return `Now tap the capital of ${selectedCountry.replace(/_/g, ' ')}!`;
@@ -36,8 +46,8 @@ function mascotPose(selectedCountry, allMatched, isChecking, feedback) {
 }
 
 function CapitalMatchGame() {
-  // Capitals reshuffle on every new round, so "Play again" gets a fresh layout.
-  const [capitals, setCapitals] = useState(() => shuffle(ROUND.map(({ capital }) => capital)));
+  // Capitals reshuffle every new game, so "Play again" gets a fresh layout.
+  const [capitals, setCapitals] = useState(() => shuffle(ALL_PAIRS.map(({ capital }) => capital)));
   const [selectedCountry, setSelectedCountry] = useState(null);
   // country -> capital once a pair is matched correctly; wrong guesses are
   // never locked in, so the child can retry the same pair.
@@ -45,9 +55,13 @@ function CapitalMatchGame() {
   const [feedback, setFeedback] = useState(null);
   const [isChecking, setIsChecking] = useState(false);
   const [error, setError] = useState(null);
+  // Round accuracy for Progress: backend set_score/2 overwrites rather than
+  // averages, so track the ratio locally and report the running percentage.
+  const [stats, setStats] = useState({ correct: 0, attempted: 0 });
+  const { setTopicScore } = useGame();
 
   const matchedCount = Object.keys(matched).length;
-  const allMatched = matchedCount === ROUND.length;
+  const allMatched = matchedCount === ALL_PAIRS.length;
 
   const selectCountry = (country) => {
     if (isChecking || allMatched || matched[country]) return;
@@ -68,6 +82,16 @@ function CapitalMatchGame() {
       if (response.result === 'correct') {
         setMatched((current) => ({ ...current, [country]: capital }));
       }
+      // Progress: report the running percentage after every drop
+      // (see docs/progress-page-wiring-plan.md).
+      const newStats = {
+        correct: stats.correct + (response.result === 'correct' ? 1 : 0),
+        attempted: stats.attempted + 1,
+      };
+      setStats(newStats);
+      const percentage = Math.round((newStats.correct / newStats.attempted) * 100);
+      setTopicScore('countries_and_capitals', percentage);
+      postTopicScore('countries_and_capitals', percentage).catch(() => {});
       setSelectedCountry(null);
     } catch {
       setError('The Capital Match backend is not available right now.');
@@ -76,12 +100,13 @@ function CapitalMatchGame() {
     }
   };
 
-  const playAgain = () => {
+  const resetGame = () => {
     setSelectedCountry(null);
     setMatched({});
     setFeedback(null);
     setError(null);
-    setCapitals(shuffle(ROUND.map(({ capital }) => capital)));
+    setStats({ correct: 0, attempted: 0 });
+    setCapitals(shuffle(ALL_PAIRS.map(({ capital }) => capital)));
   };
 
   return (
@@ -119,13 +144,13 @@ function CapitalMatchGame() {
       {/* Progress: one dot per pair, filled as they get matched. */}
       <div className="flex items-center justify-center gap-3">
         <span className="text-lg font-extrabold text-[#7c2d12]">
-          {matchedCount} of {ROUND.length} matched
+          {matchedCount} of {ALL_PAIRS.length} matched
         </span>
-        <div className="flex gap-2">
-          {ROUND.map(({ country }) => (
+        <div className="flex gap-1.5">
+          {ALL_PAIRS.map(({ country }) => (
             <span
               key={country}
-              className={`h-3.5 w-10 rounded-full ${matched[country] ? 'bg-green-500' : 'bg-stone-200'}`}
+              className={`h-3.5 w-5 rounded-full ${matched[country] ? 'bg-green-500' : 'bg-stone-200'}`}
             />
           ))}
         </div>
@@ -135,7 +160,7 @@ function CapitalMatchGame() {
       <div className="flex flex-col items-center gap-3">
         <h2 className="m-0 text-2xl font-extrabold text-[#7c2d12]">1. Tap a country</h2>
         <div className="flex flex-wrap justify-center gap-3">
-          {ROUND.map(({ country }) => (
+          {ALL_PAIRS.map(({ country }) => (
             <CountryDragCard
               key={country}
               name={country}
@@ -174,15 +199,17 @@ function CapitalMatchGame() {
             <Confetti burstKey={matchedCount} />
             <div className="text-5xl leading-none">🏆</div>
             <p className="m-0 text-2xl font-extrabold text-[#7c2d12]">
-              All capitals matched — great job!
+              All 10 capitals matched — amazing job!
             </p>
-            <button
-              type="button"
-              onClick={playAgain}
-              className="mt-2 min-h-[56px] rounded-full bg-rose-500 px-8 py-[15px] text-lg font-extrabold text-white shadow-[0_6px_0_#be123c] transition-transform hover:-translate-y-1 active:translate-y-[3px] active:shadow-[0_2px_0_#be123c]"
-            >
-              🔄 Play again
-            </button>
+            <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={resetGame}
+                className="min-h-[56px] rounded-full bg-sky-500 px-8 py-[15px] text-lg font-extrabold text-white shadow-[0_6px_0_#0369a1] transition-transform hover:-translate-y-1 active:translate-y-[3px] active:shadow-[0_2px_0_#0369a1]"
+              >
+                🎉 Play again
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

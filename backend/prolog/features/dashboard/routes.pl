@@ -1,12 +1,22 @@
 % backend/prolog/features/dashboard/routes.pl
 % HTTP routes for Feature 7 — Personal Progress.
 
-:- http_handler(root(score), handle_set_score, [method(post)]).
+:- http_handler(root(score), handle_set_score, []).
 :- http_handler(root(recommend), handle_recommend, [method(get)]).
 :- http_handler(root(scores), handle_all_scores, [method(get)]).
 
 % POST /score
 % Body: { "topic": "neighboring_countries", "score": 40 }
+
+% Browsers preflight cross-origin POSTs with an OPTIONS request. Without this
+% branch http_dispatch would answer 405 with no CORS headers and the browser
+% would block the real POST entirely (same pattern as neighbor_game/routes.pl,
+% verified against the React dev server).
+handle_set_score(Request) :-
+    option(method(options), Request), !,
+    cors_enable(Request, [ methods([post]) ]),
+    format('~n').
+
 handle_set_score(Request) :-
     cors_enable,
     http_read_json_dict(Request, Body),

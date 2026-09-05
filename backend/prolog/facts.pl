@@ -158,7 +158,43 @@ famous_for(thailand,    grand_palace).
 famous_for(vietnam,     ha_long_bay).
 famous_for(vietnam,     hoi_an_lanterns).
 
-% ── §3.9 Borders (each border written once, from one side only) ────
+% ── §3.9 Representative animals & famous foods ─────────────────────
+national_animal(brunei,      white_bellied_sea_eagle).
+national_animal(cambodia,    kouprey).
+national_animal(indonesia,   komodo_dragon).
+national_animal(laos,        elephant).
+national_animal(malaysia,    malayan_tiger).
+national_animal(myanmar,     peacock).
+national_animal(philippines, carabao).
+national_animal(singapore,   lion).
+national_animal(thailand,    elephant).
+national_animal(vietnam,     water_buffalo).
+
+famous_food(brunei,      ambuyat).
+famous_food(cambodia,    fish_amok).
+famous_food(indonesia,   nasi_goreng).
+famous_food(indonesia,   rendang).
+famous_food(laos,        laap).
+famous_food(malaysia,    nasi_lemak).
+famous_food(myanmar,     mohinga).
+famous_food(philippines, adobo).
+famous_food(singapore,   chicken_rice).
+famous_food(thailand,    pad_thai).
+famous_food(vietnam,     pho).
+
+% ── §3.10 ASEAN membership years ───────────────────────────────────
+asean_member_since(brunei,      1984).
+asean_member_since(cambodia,    1999).
+asean_member_since(indonesia,   1967).
+asean_member_since(laos,        1997).
+asean_member_since(malaysia,    1967).
+asean_member_since(myanmar,     1997).
+asean_member_since(philippines, 1967).
+asean_member_since(singapore,   1967).
+asean_member_since(thailand,    1967).
+asean_member_since(vietnam,     1995).
+
+% ── §3.11 Borders (each border written once, from one side only) ───
 % Mainland Southeast Asia
 borders(myanmar,  thailand).
 borders(myanmar,  laos).

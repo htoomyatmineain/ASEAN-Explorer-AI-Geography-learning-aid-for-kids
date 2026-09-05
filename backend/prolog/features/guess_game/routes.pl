@@ -1,13 +1,23 @@
 % backend/prolog/features/guess_game/routes.pl
 % HTTP route for Feature 3 — Guess the Country.
 
-:- http_handler(root(guess), handle_guess, [method(post)]).
+:- http_handler(root(guess), handle_guess, []).
 
 % POST /guess
 % Body: { "clues": [ {"type": "capital", "value": "bangkok"},
 %                     {"type": "member_of", "value": "asean"},
 %                     {"type": "famous_for", "value": "elephants"},
 %                     {"type": "borders", "value": "myanmar"} ] }
+
+% Browsers preflight cross-origin POSTs with an OPTIONS request. Without this
+% branch http_dispatch would answer 405 with no CORS headers and the browser
+% would block the real POST entirely (same pattern as neighbor_game/routes.pl,
+% verified against the React dev server).
+handle_guess(Request) :-
+    option(method(options), Request), !,
+    cors_enable(Request, [ methods([post]) ]),
+    format('~n').
+
 handle_guess(Request) :-
     cors_enable,
     http_read_json_dict(Request, Body),

@@ -13,3 +13,17 @@ export const ISO_NUMERIC_TO_COUNTRY = {
   '764': { name: 'thailand', label: 'Thailand' },
   '704': { name: 'vietnam', label: 'Vietnam' },
 };
+
+// Ordered list for the detail panel's Prev/Next country navigation.
+export const ASEAN_COUNTRIES = [
+  'brunei',
+  'cambodia',
+  'indonesia',
+  'laos',
+  'malaysia',
+  'myanmar',
+  'philippines',
+  'singapore',
+  'thailand',
+  'vietnam',
+];

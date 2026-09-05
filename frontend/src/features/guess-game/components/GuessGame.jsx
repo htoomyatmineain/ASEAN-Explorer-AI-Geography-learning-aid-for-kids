@@ -5,6 +5,8 @@ import Confetti from './Confetti';
 import { guessCountry } from '../guessGameApi';
 import { FLAG_IMAGE_BY_COUNTRY, COUNTRY_CARD_IMAGE, KIKO } from '../clueOptions';
 import { CHALLENGE_ROUNDS, GUESSABLE_COUNTRIES } from '../challengeRounds';
+import { useGame } from '../../../shared/state/GameContext';
+import { setTopicScore as postTopicScore } from '../../dashboard/dashboardApi';
 
 function mascotLine(guess, result, isChecking) {
   if (isChecking) return 'Let me check with the map…';
@@ -27,6 +29,7 @@ function GuessGame() {
   const [result, setResult] = useState(null);
   const [resultKey, setResultKey] = useState(0);
   const [isChecking, setIsChecking] = useState(false);
+  const { setTopicScore } = useGame();
 
   const clues = CHALLENGE_ROUNDS[roundIndex];
 
@@ -52,6 +55,11 @@ function GuessGame() {
       if (response?.answer) {
         const correct = response.answer === guess;
         setResult({ correct, answer: response.answer });
+        // Progress: report accuracy so the Progress page reflects real play
+        // (see docs/progress-page-wiring-plan.md).
+        const score = correct ? 100 : 50;
+        setTopicScore('flags_and_currencies', score);
+        postTopicScore('flags_and_currencies', score).catch(() => {});
       } else {
         setResult({ error: response?.error || 'The Guess the Country backend is not available right now.' });
       }
@@ -136,21 +144,63 @@ function GuessGame() {
           </span>
           <h2 className="m-0 text-2xl font-extrabold text-[#7c2d12]">Which country is it?</h2>
         </div>
+        {/* The full pickable list in words, so every country (Indonesia included)
+            is spelled out right under the question. */}
+        <p className="m-0 text-center text-sm font-semibold text-[#a16207]">
+          Pick one of:{' '}
+          {GUESSABLE_COUNTRIES.map((country, index) => (
+            <span key={country}>
+              <span className="capitalize">{country.replace(/_/g, ' ')}</span>
+              {index < GUESSABLE_COUNTRIES.length - 1 ? ' · ' : ''}
+            </span>
+          ))}
+        </p>
         <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(120px,1fr))]">
           {GUESSABLE_COUNTRIES.map((country) => {
             const selected = guess === country;
+            // Once the backend has spoken, mark the correct answer (and the
+            // child's wrong pick) right in the grid, so the answer is always
+            // visible inside the country selection itself.
+            const isAnswer = Boolean(result?.answer) && result.answer === country;
+            const isWrongPick = result?.correct === false && selected;
             return (
               <button
                 key={country}
                 type="button"
                 onClick={() => pickGuess(country)}
                 className={`relative flex flex-col items-center justify-center gap-2 rounded-[20px] border-4 px-3 py-4 font-bold capitalize transition-transform hover:-translate-y-1 active:translate-y-0 ${
-                  selected
-                    ? 'border-[#d6a35c] bg-[#fef3c7] text-[#7c2d12] shadow-[0_5px_0_#d6a35c]'
-                    : 'border-[#f1f5f9] bg-white text-slate-600 shadow-[0_5px_0_#f1f5f9]'
+                  isAnswer
+                    ? 'border-green-500 bg-green-50 text-green-700 shadow-[0_5px_0_#22c55e]'
+                    : isWrongPick
+                      ? 'border-red-400 bg-red-50 text-red-600 shadow-[0_5px_0_#f87171]'
+                      : selected
+                        ? 'border-[#d6a35c] bg-[#fef3c7] text-[#7c2d12] shadow-[0_5px_0_#d6a35c]'
+                        : 'border-[#f1f5f9] bg-white text-slate-600 shadow-[0_5px_0_#f1f5f9]'
                 }`}
               >
-                {selected && (
+                {isAnswer && (
+                  <motion.span
+                    initial={{ scale: 0, rotate: -20 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 14 }}
+                    className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-green-500 text-sm font-bold text-white shadow-[0_2px_0_#15803d]"
+                    aria-hidden="true"
+                  >
+                    ✓
+                  </motion.span>
+                )}
+                {isWrongPick && (
+                  <motion.span
+                    initial={{ scale: 0, rotate: -20 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 14 }}
+                    className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-sm font-bold text-white shadow-[0_2px_0_#b91c1c]"
+                    aria-hidden="true"
+                  >
+                    ✗
+                  </motion.span>
+                )}
+                {selected && !isAnswer && !isWrongPick && (
                   <motion.span
                     initial={{ scale: 0, rotate: -20 }}
                     animate={{ scale: 1, rotate: 0 }}
@@ -191,7 +241,7 @@ function GuessGame() {
           onClick={nextRound}
           className="min-h-[56px] rounded-full bg-[#fef3c7] px-7 py-[15px] text-lg font-extrabold text-[#7c2d12] shadow-[0_6px_0_#e7c9a0] transition-transform hover:-translate-y-1 active:translate-y-[3px] active:shadow-[0_2px_0_#e7c9a0]"
         >
-          ➡️ Next round
+          ➡️ Next question
         </button>
       </div>
 

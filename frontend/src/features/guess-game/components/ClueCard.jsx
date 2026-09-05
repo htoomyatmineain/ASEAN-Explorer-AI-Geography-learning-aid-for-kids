@@ -10,8 +10,9 @@ import {
 // Rotation cycles through 4 jaunty angles like sticky notes pinned to a corkboard.
 const ROTATIONS = [-3, 2, -1.5, 3];
 
-// Capital city clues keep the generic clue-type icon (not a flag) — only
-// borders/famous_for swap in a specific image for their value.
+// Capital city clues keep the generic clue-type icon (not a flag) — a flag
+// would give the answer away. Only borders/famous_for swap in a specific
+// image for their value.
 function thumbnailFor(clue) {
   if (clue.type === 'borders') return FLAG_IMAGE_BY_COUNTRY[clue.value];
   if (clue.type === 'famous_for') return LANDMARK_IMAGE_BY_VALUE[clue.value];

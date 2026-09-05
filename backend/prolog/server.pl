@@ -67,14 +67,18 @@ json_quote_atom(Atom, Quoted) :-
 % /country/:name - Implemented
 handle_country(NameAtom, _Request) :-
     cors_enable,
-    ( country_info(NameAtom, card(NameAtom, Capital, Currency, Flag, Region, IsMember, Facts)) ->
+    ( country_info(NameAtom, card(NameAtom, Capital, Currency, Flag, Region, IsMember, MemberSince, Facts, Animals, Foods)) ->
         json_unicode_escape(Flag, FlagEscaped),
         maplist(json_quote_atom, Facts, QuotedFacts),
         atomic_list_concat(QuotedFacts, ',', FactsJoined),
+        maplist(json_quote_atom, Animals, QuotedAnimals),
+        atomic_list_concat(QuotedAnimals, ',', AnimalsJoined),
+        maplist(json_quote_atom, Foods, QuotedFoods),
+        atomic_list_concat(QuotedFoods, ',', FoodsJoined),
         format('Content-type: application/json~n~n'),
         format(
-            '{"country":"~w","capital":"~w","currency":"~w","flag":"~w","region":"~w","asean_member":"~w","famous_for":[~w]}',
-            [NameAtom, Capital, Currency, FlagEscaped, Region, IsMember, FactsJoined]
+            '{"country":"~w","capital":"~w","currency":"~w","flag":"~w","region":"~w","asean_member":"~w","member_since":~w,"famous_for":[~w],"animals":[~w],"foods":[~w]}',
+            [NameAtom, Capital, Currency, FlagEscaped, Region, IsMember, MemberSince, FactsJoined, AnimalsJoined, FoodsJoined]
         )
     ; reply_json_dict(_{ error: "Country not found" }, [status(404)])
     ).
