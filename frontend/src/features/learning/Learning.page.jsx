@@ -6,51 +6,53 @@ import CountryDetailPanel from './components/CountryDetailPanel';
 // Same asset as the entrance page's logo (frontend/src/features/home/Home.page.jsx)
 // — filename has a space, so it stays percent-encoded.
 const LOGO_IMAGE = '/assets/logo/ASEAN%20explorer.png';
-// Same illustrated background as the shared Layout and the game pages
-// (frontend/src/features/main-menu/components/Layout.jsx).
-const BACKGROUND_IMAGE = '/assets/background/learning.png';
+const SETTINGS_ICON = '/assets/icons/nav-03.png';
 
 const BACK_BUTTON =
-  'flex shrink-0 items-center justify-center gap-2 rounded-xl border-b-4 border-rose-700 bg-rose-500 px-4 py-2 text-white [text-shadow:_0_2px_4px_rgb(0_0_0_/_60%)] shadow-[0_3px_0_0_rgb(190,18,60)] transition-transform duration-100 ease-out active:translate-y-[3px] active:border-b-0 active:shadow-none';
+  'flex shrink-0 items-center justify-center gap-2 rounded-xl border-b-4 border-rose-700 bg-rose-500 px-5 py-3 font-comic font-bold text-white [text-shadow:_0_2px_4px_rgb(0_0_0_/_60%)] shadow-[0_3px_0_0_rgb(190,18,60)] transition-transform duration-100 ease-out active:translate-y-[3px] active:border-b-0 active:shadow-none';
 
-// Only the map fills the page. Tapping a country opens its info popup
-// (flag, name, capital, animal, foods, attractions) as an overlay.
+const SETTINGS_BUTTON =
+  'flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-xl border-b-4 border-lime-600 bg-lime-400 shadow-[0_3px_0_0_rgb(101,163,13)] transition-transform duration-100 ease-out active:translate-y-[3px] active:border-b-0 active:shadow-none';
+
+// The map fills the entire viewport — logo, hint text, the detail card and
+// the bottom nav are all overlays floating on top of it, not a separate
+// header bar (which used to leave an empty colored strip above the map).
 function LearningPage() {
   const [selectedCountry, setSelectedCountry] = useState(null);
   const navigate = useNavigate();
 
   return (
-    <div className="relative flex h-screen flex-col overflow-hidden">
-      {/* Illustrated background behind everything; the map container paints
-          a near-opaque teal wash over it so the map stays fully readable. */}
-      <div
-        className="fixed inset-0 -z-10 bg-cover bg-no-repeat"
-        style={{ backgroundImage: `url('${BACKGROUND_IMAGE}')`, backgroundPosition: 'center bottom' }}
-      />
+    <div className="relative h-screen w-full overflow-hidden">
+      <AseanMap selectedCountry={selectedCountry} onSelectCountry={setSelectedCountry} />
 
-      <header className="relative flex shrink-0 items-center justify-between gap-4 px-6 py-3">
-        <Link to="/main-menu">
-          <img src={LOGO_IMAGE} alt="ASEAN Explorer" className="h-12 w-auto drop-shadow" />
-        </Link>
-        <span className="absolute left-1/2 -translate-x-1/2 text-2xl font-extrabold uppercase tracking-wide text-white [text-shadow:_0_2px_4px_rgb(0_0_0_/_60%)]">
-          Learn About ASEAN Countries!
+      <Link to="/main-menu" className="absolute left-6 top-4 z-20">
+        <img src={LOGO_IMAGE} alt="ASEAN Explorer" className="h-16 w-auto drop-shadow" />
+      </Link>
+
+      {/* Hint text, top-center. */}
+      <div className="pointer-events-none absolute left-1/2 top-6 z-20 -translate-x-1/2">
+        <span className="rounded-full bg-white/90 px-3 py-1.5 font-comic text-sm font-bold text-sky-800 shadow-[0_2px_4px_rgba(11,61,66,0.3)]">
+          <span aria-hidden="true" className="mr-1 inline-block animate-bounce">👆</span>
+          Tap a country to learn about it!
         </span>
-        <button type="button" onClick={() => navigate('/main-menu')} className={BACK_BUTTON}>
-          Main Menu
-        </button>
-      </header>
+      </div>
 
-      {/* Full-page map */}
-      <div className="relative flex-1 overflow-hidden">
-        <AseanMap selectedCountry={selectedCountry} onSelectCountry={setSelectedCountry} />
-        {selectedCountry && (
-          <div className="absolute right-4 top-4 z-20 w-full max-w-sm">
-            <CountryDetailPanel
-              countryName={selectedCountry}
-              onClose={() => setSelectedCountry(null)}
-            />
-          </div>
-        )}
+      {/* Detail card sits on the left, with a gap from every edge instead of
+          flush against the screen. */}
+      {selectedCountry && (
+        <div className="absolute bottom-6 left-6 top-24 z-20 w-[calc(100%-3rem)] sm:w-[30%]">
+          <CountryDetailPanel countryName={selectedCountry} onClose={() => setSelectedCountry(null)} />
+        </div>
+      )}
+
+      {/* Bottom nav bar. */}
+      <div className="absolute bottom-4 right-4 z-20 flex items-center gap-3">
+        <button type="button" onClick={() => navigate('/main-menu')} className={BACK_BUTTON}>
+          ← Back
+        </button>
+        <Link to="/settings" aria-label="Settings" className={SETTINGS_BUTTON}>
+          <img src={SETTINGS_ICON} alt="" className="h-7 w-7" />
+        </Link>
       </div>
     </div>
   );

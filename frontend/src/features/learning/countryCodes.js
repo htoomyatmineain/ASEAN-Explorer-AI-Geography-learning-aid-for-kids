@@ -1,5 +1,5 @@
 // Maps the ISO 3166-1 numeric `id` used by the topojson in
-// public/assets/map/asean-countries-50m.json to the lowercase atom names
+// public/assets/map/world-50m.json to the lowercase atom names
 // backend/prolog/facts.pl uses for each of the 10 ASEAN member countries.
 export const ISO_NUMERIC_TO_COUNTRY = {
   '096': { name: 'brunei', label: 'Brunei' },

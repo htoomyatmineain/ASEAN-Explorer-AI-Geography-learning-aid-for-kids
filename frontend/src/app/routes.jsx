@@ -16,13 +16,13 @@ import SettingsPage from '../features/settings/Settings.page';
 export const routes = [
   { path: '/', element: HomePage, bare: true },
   { path: '/main-menu', element: MainMenuPage },
-  { path: '/practice', element: PracticeSelectionPage },
   // bare: true — these pages build their own full-page header/layout instead
   // of the shared slim-header Layout, so each reads as its own dedicated
   // screen (and can be opened straight in a new browser tab via its URL).
+  { path: '/practice', element: PracticeSelectionPage, bare: true },
   { path: '/explore', element: LearningPage, bare: true },
-  { path: '/journey', element: JourneyPage },
-  { path: '/guess', element: GuessCountryPage },
+  { path: '/journey', element: JourneyPage, bare: true },
+  { path: '/guess', element: GuessCountryPage, bare: true },
   { path: '/neighbors', element: NeighborQuizPage, bare: true },
   { path: '/capitals', element: CapitalMatchPage, bare: true },
   { path: '/dashboard', element: DashboardPage },

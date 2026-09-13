@@ -11,3 +11,23 @@ body {
   font-family: 'Cherry Bomb One', 'Comic Sans MS', system-ui, sans-serif;
   color: #ffffff;
 }
+
+/* react-simple-maps applies pan/zoom as an instant SVG transform attribute —
+   this lets the browser animate it like any other CSS transform change, which
+   is what makes AseanMap's world -> ASEAN intro and per-country zoom smooth. */
+.rsm-zoomable-group {
+  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Slow drifting icons for the Practice Mode background (see
+   frontend/src/features/practice-selection/PracticeSelection.page.jsx). Each
+   icon sets --drift-x/--drift-rotate inline so they don't all move in lockstep. */
+@keyframes float-drift {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(var(--drift-x, 24px), -36px) rotate(var(--drift-rotate, 12deg)); }
+}
+.floating-icon {
+  animation-name: float-drift;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
