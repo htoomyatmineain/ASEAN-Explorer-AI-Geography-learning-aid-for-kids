@@ -120,15 +120,15 @@ function NeighborGame() {
             />
           </AnimatePresence>
         </motion.div>
-        <p className="m-0 text-xl font-bold text-[#7c2d12]">{mascotLine(status, pick, correct, round.country)}</p>
+        <p className="m-0 font-comic text-xl font-bold text-[#7c2d12]">{mascotLine(status, pick, correct, round.country)}</p>
       </div>
 
       {/* The question */}
       <div className="flex flex-col items-center gap-2 text-center">
-        <span className="rounded-full bg-[#fef3c7] px-4 py-1 text-sm font-bold text-[#7c2d12]">
+        <span className="rounded-full bg-[#fef3c7] px-4 py-1 font-comic text-sm font-bold text-[#7c2d12]">
           Question {roundIndex + 1} of {ROUNDS.length}
         </span>
-        <h2 className="m-0 text-3xl font-extrabold leading-tight text-[#7c2d12]">
+        <h2 className="m-0 font-comic text-3xl font-extrabold leading-tight text-[#7c2d12]">
           Which of these does <span className="capitalize text-sky-600">NOT</span> border{' '}
           <span className="capitalize text-sky-600">{round.country}</span>?
         </h2>

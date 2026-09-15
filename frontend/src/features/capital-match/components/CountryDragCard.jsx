@@ -37,7 +37,7 @@ function CountryDragCard({ name, selected, matched, onSelect }) {
         </span>
       )}
       <img src={FLAG_IMAGE_BY_COUNTRY[name]} alt="" className="h-10 w-14 rounded object-cover" />
-      <span className="text-center text-base leading-tight">{name.replace(/_/g, ' ')}</span>
+      <span className="text-center font-comic text-base leading-tight">{name.replace(/_/g, ' ')}</span>
     </button>
   );
 }

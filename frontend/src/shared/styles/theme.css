@@ -43,3 +43,14 @@ body {
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
 }
+
+/* Keeps a scrollable element's own scroll behavior while hiding the
+   scrollbar chrome — used where a scrollbar would clutter an otherwise
+   clean card (e.g. the Learning mode country detail card). */
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

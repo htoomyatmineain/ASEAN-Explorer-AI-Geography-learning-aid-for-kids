@@ -21,7 +21,7 @@ function CapitalDropTarget({ name, matched, onDrop }) {
         </span>
       )}
       <span className="text-2xl leading-none" aria-hidden="true">🏛️</span>
-      <span className="text-center text-base leading-tight">{name.replace(/_/g, ' ')}</span>
+      <span className="text-center font-comic text-base leading-tight">{name.replace(/_/g, ' ')}</span>
     </button>
   );
 }

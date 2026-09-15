@@ -55,7 +55,7 @@ function NeighborMapHighlight({ candidates, pick, nonNeighbors, status, onPick }
               alt=""
               className="h-10 w-14 rounded object-cover"
             />
-            <span className="text-center text-base leading-tight">{candidate.replace(/_/g, ' ')}</span>
+            <span className="text-center font-comic text-base leading-tight">{candidate.replace(/_/g, ' ')}</span>
           </button>
         );
       })}
