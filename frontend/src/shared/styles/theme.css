@@ -31,3 +31,15 @@ body {
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
 }
+
+/* Boats/ships stay near the water line instead of bobbing 36px up into the
+   sky like clouds and planes — just a gentle rock and a horizontal sail. */
+@keyframes boat-drift {
+  0%, 100% { transform: translate(0, 0) rotate(var(--drift-rotate-start, -3deg)); }
+  50% { transform: translate(var(--drift-x, 24px), -6px) rotate(var(--drift-rotate, 3deg)); }
+}
+.floating-icon-boat {
+  animation-name: boat-drift;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}

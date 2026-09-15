@@ -6,6 +6,7 @@ module.exports = {
       fontFamily: {
         display: ['"Cherry Bomb One"', 'cursive'],
         comic: ['"Comic Relief"', '"Comic Sans MS"', 'cursive'],
+        momo: ['"Momo Trust Display"', 'sans-serif'],
       },
     },
   },

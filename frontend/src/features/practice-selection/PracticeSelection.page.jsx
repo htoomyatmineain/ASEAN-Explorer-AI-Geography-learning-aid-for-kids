@@ -50,7 +50,7 @@ const NAV_ARROW =
   'flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border-b-4 border-sky-600 bg-sky-400 text-3xl font-extrabold text-white shadow-[0_5px_0_0_rgb(2,132,199)] transition-transform duration-100 ease-out active:translate-y-[5px] active:border-b-0 active:shadow-none';
 
 const BACK_BUTTON =
-  'flex shrink-0 items-center justify-center gap-2 rounded-xl border-b-4 border-rose-700 bg-rose-500 px-5 py-3 font-comic font-bold text-white [text-shadow:_0_2px_4px_rgb(0_0_0_/_60%)] shadow-[0_3px_0_0_rgb(190,18,60)] transition-transform duration-100 ease-out active:translate-y-[3px] active:border-b-0 active:shadow-none';
+  'flex shrink-0 items-center justify-center gap-2 rounded-xl border-b-4 border-rose-700 bg-rose-500 px-6 py-3.5 text-xl font-extrabold uppercase tracking-wide text-white [text-shadow:_0_2px_4px_rgb(0_0_0_/_60%)] shadow-[0_3px_0_0_rgb(190,18,60)] transition-transform duration-100 ease-out active:translate-y-[3px] active:border-b-0 active:shadow-none';
 
 const SETTINGS_BUTTON =
   'flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-xl border-b-4 border-lime-600 bg-lime-400 shadow-[0_3px_0_0_rgb(101,163,13)] transition-transform duration-100 ease-out active:translate-y-[3px] active:border-b-0 active:shadow-none';
@@ -150,7 +150,7 @@ function PracticeSelectionPage() {
 
       <div className="absolute bottom-4 right-4 z-20 flex items-center gap-3">
         <button type="button" onClick={() => navigate('/main-menu')} className={BACK_BUTTON}>
-          ← Back
+          Back
         </button>
         <Link to="/settings" aria-label="Settings" className={SETTINGS_BUTTON}>
           <img src={SETTINGS_ICON} alt="" className="h-7 w-7" />

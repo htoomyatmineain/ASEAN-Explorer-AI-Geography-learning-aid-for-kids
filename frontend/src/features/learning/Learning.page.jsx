@@ -9,7 +9,7 @@ const LOGO_IMAGE = '/assets/logo/ASEAN%20explorer.png';
 const SETTINGS_ICON = '/assets/icons/nav-03.png';
 
 const BACK_BUTTON =
-  'flex shrink-0 items-center justify-center gap-2 rounded-xl border-b-4 border-rose-700 bg-rose-500 px-5 py-3 font-comic font-bold text-white [text-shadow:_0_2px_4px_rgb(0_0_0_/_60%)] shadow-[0_3px_0_0_rgb(190,18,60)] transition-transform duration-100 ease-out active:translate-y-[3px] active:border-b-0 active:shadow-none';
+  'flex shrink-0 items-center justify-center gap-2 rounded-xl border-b-4 border-rose-700 bg-rose-500 px-6 py-3.5 text-xl font-extrabold uppercase tracking-wide text-white [text-shadow:_0_2px_4px_rgb(0_0_0_/_60%)] shadow-[0_3px_0_0_rgb(190,18,60)] transition-transform duration-100 ease-out active:translate-y-[3px] active:border-b-0 active:shadow-none';
 
 const SETTINGS_BUTTON =
   'flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-xl border-b-4 border-lime-600 bg-lime-400 shadow-[0_3px_0_0_rgb(101,163,13)] transition-transform duration-100 ease-out active:translate-y-[3px] active:border-b-0 active:shadow-none';
@@ -29,10 +29,10 @@ function LearningPage() {
         <img src={LOGO_IMAGE} alt="ASEAN Explorer" className="h-16 w-auto drop-shadow" />
       </Link>
 
-      {/* Hint text, top-center. */}
-      <div className="pointer-events-none absolute left-1/2 top-6 z-20 -translate-x-1/2">
-        <span className="rounded-full bg-white/90 px-3 py-1.5 font-comic text-sm font-bold text-sky-800 shadow-[0_2px_4px_rgba(11,61,66,0.3)]">
-          <span aria-hidden="true" className="mr-1 inline-block animate-bounce">👆</span>
+      {/* Hint text, top-right corner. */}
+      <div className="pointer-events-none absolute right-6 top-6 z-20">
+        <span className="inline-flex items-center gap-2 rounded-2xl border-2 border-b-[5px] border-sky-400 bg-white/90 px-4 py-2.5 font-comic text-base font-bold text-sky-800 shadow-[0_3px_0_0_rgb(14,165,233)]">
+          <span aria-hidden="true" className="inline-block animate-bounce">👆</span>
           Tap a country to learn about it!
         </span>
       </div>
@@ -48,7 +48,7 @@ function LearningPage() {
       {/* Bottom nav bar. */}
       <div className="absolute bottom-4 right-4 z-20 flex items-center gap-3">
         <button type="button" onClick={() => navigate('/main-menu')} className={BACK_BUTTON}>
-          ← Back
+          Back
         </button>
         <Link to="/settings" aria-label="Settings" className={SETTINGS_BUTTON}>
           <img src={SETTINGS_ICON} alt="" className="h-7 w-7" />

@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { ComposableMap, Geographies, Geography, Marker, ZoomableGroup } from 'react-simple-maps';
 import { ISO_NUMERIC_TO_COUNTRY } from '../countryCodes';
 import { FLAG_IMAGE_BY_COUNTRY } from '../../guess-game/clueOptions';
-import { ATTRACTIONS, attractionImage, attractionLabel } from '../attractions';
 
 // Real world geometry (241 countries) so Learning Mode can open on a full
 // world map before zooming into ASEAN — replaces the old ASEAN-only file,
@@ -17,7 +16,6 @@ const WATER_GRADIENT =
   'linear-gradient(160deg, #8fe8f7 0%, #4cc9ec 45%, #1f9fd6 100%)';
 const ASEAN_LAND = '#22c55e';
 const ASEAN_LAND_HOVER = '#4ade80';
-const ASEAN_LAND_SELECTED = '#fbbf24';
 const ASEAN_SAND_RING = '#f6e3b4';
 const OTHER_LAND = '#ecdfb0';
 const OTHER_LAND_STROKE = 'rgba(120, 108, 70, 0.5)';
@@ -26,46 +24,37 @@ const HOVER_STROKE = '#ffffff';
 const ISLAND_SHADOW = 'drop-shadow(0 3px 4px rgba(11,61,66,0.35))';
 const PILL_SHADOW = 'drop-shadow(0 2px 3px rgba(11,61,66,0.35))';
 
-// Purely decorative clouds/plane/boats drifting over the water, echoing the
+// Purely decorative clouds/planes/boats drifting over the water, echoing the
 // "Ui ref/map-00.jpg" mood board. Positioned to mostly clear the open-water
 // gaps between ASEAN countries in the default view and stay out from under
-// the logo, hint pill and bottom nav. Reuses the `.floating-icon` drift
-// animation already defined in shared/styles/theme.css.
+// the logo, hint pill and bottom nav. `kind: 'boat'` picks the gentler
+// near-water rocking animation; everything else uses the sky-height bob —
+// both defined in shared/styles/theme.css.
 const SKY_DECORATIONS = [
-  { emoji: '☁️', top: '14%', left: '46%', size: '4.5rem', duration: '22s', delay: '0s', driftX: '40px', opacity: 0.85 },
-  { emoji: '☁️', top: '24%', left: '80%', size: '3.2rem', duration: '18s', delay: '2s', driftX: '-30px', opacity: 0.75 },
-  { emoji: '☁️', top: '6%', left: '22%', size: '3rem', duration: '20s', delay: '1s', driftX: '26px', opacity: 0.7 },
-  { emoji: '✈️', top: '32%', left: '87%', size: '2.2rem', duration: '26s', delay: '0.5s', driftX: '60px', rotate: '4deg', opacity: 0.8 },
-  { emoji: '🚤', top: '60%', left: '64%', size: '2rem', duration: '16s', delay: '1.5s', driftX: '-24px', rotate: '-3deg', opacity: 0.85 },
-  { emoji: '⛵', top: '76%', left: '34%', size: '1.9rem', duration: '19s', delay: '0.8s', driftX: '20px', rotate: '3deg', opacity: 0.8 },
+  { kind: 'cloud', emoji: '☁️', top: '8%', left: '30%', size: '4rem', duration: '22s', delay: '0s', driftX: '40px', opacity: 0.85 },
+  { kind: 'cloud', emoji: '☁️', top: '6%', left: '58%', size: '3.4rem', duration: '19s', delay: '1.2s', driftX: '-32px', opacity: 0.8 },
+  { kind: 'cloud', emoji: '☁️', top: '16%', left: '78%', size: '3rem', duration: '24s', delay: '2s', driftX: '30px', opacity: 0.75 },
+  { kind: 'cloud', emoji: '☁️', top: '28%', left: '12%', size: '3.6rem', duration: '20s', delay: '0.6s', driftX: '26px', opacity: 0.8 },
+  { kind: 'cloud', emoji: '☁️', top: '34%', left: '90%', size: '2.6rem', duration: '17s', delay: '2.4s', driftX: '-22px', opacity: 0.7 },
+  { kind: 'cloud', emoji: '☁️', top: '4%', left: '4%', size: '2.4rem', duration: '21s', delay: '1.6s', driftX: '20px', opacity: 0.7 },
+  { kind: 'plane', emoji: '🛩️', top: '20%', left: '42%', size: '2.2rem', duration: '26s', delay: '0.5s', driftX: '60px', rotate: '8deg', opacity: 0.9 },
+  { kind: 'plane', emoji: '🛩️', top: '46%', left: '84%', size: '2rem', duration: '23s', delay: '3s', driftX: '-52px', rotate: '-6deg', opacity: 0.9 },
+  { kind: 'plane', emoji: '🛩️', top: '64%', left: '18%', size: '2.3rem', duration: '28s', delay: '1.4s', driftX: '48px', rotate: '12deg', opacity: 0.9 },
+  { kind: 'boat', emoji: '🚤', top: '56%', left: '68%', size: '2rem', duration: '9s', delay: '1.5s', driftX: '26px', opacity: 0.9 },
+  { kind: 'boat', emoji: '⛵', top: '72%', left: '38%', size: '1.9rem', duration: '11s', delay: '0.8s', driftX: '-22px', opacity: 0.85 },
+  { kind: 'boat', emoji: '🛥️', top: '40%', left: '8%', size: '1.9rem', duration: '10s', delay: '2.6s', driftX: '20px', opacity: 0.85 },
+  { kind: 'boat', emoji: '🚢', top: '82%', left: '58%', size: '2.1rem', duration: '13s', delay: '0.3s', driftX: '-30px', opacity: 0.8 },
 ];
 
 // Base (unzoomed) framing wide enough to read as "the whole world" during the
 // opening animation. ZoomableGroup's own center/zoom then pans/scales on top
-// of this — see WORLD_VIEW / ASEAN_VIEW / COUNTRY_VIEWS below.
+// of this — see WORLD_VIEW / ASEAN_VIEW below.
 const BASE_PROJECTION = { scale: 145, center: [20, 12] };
 
 const WORLD_VIEW = { center: BASE_PROJECTION.center, zoom: 1 };
 const ASEAN_VIEW = { center: [111, 8.5], zoom: 5.6 };
 
-// Per-country camera target for the "zoom in to fit" pop-up. Center is the
-// same point used for that country's name pill; zoom is hand-tuned to its
-// footprint (a tiny country like Singapore needs far more zoom than a
-// sprawling archipelago like Indonesia, which can never fully fit anyway).
-const COUNTRY_VIEWS = {
-  brunei: { center: [114.6, 4.5], zoom: 40 },
-  cambodia: { center: [104.9, 12.7], zoom: 22 },
-  indonesia: { center: [110, -2], zoom: 4.4 },
-  laos: { center: [102.8, 18.3], zoom: 16 },
-  malaysia: { center: [108, 3.5], zoom: 9 },
-  myanmar: { center: [96.5, 20.5], zoom: 10 },
-  philippines: { center: [122.6, 12.2], zoom: 11 },
-  singapore: { center: [103.85, 1.35], zoom: 45 },
-  thailand: { center: [101, 15.3], zoom: 10 },
-  vietnam: { center: [106.5, 16.2], zoom: 10 },
-};
-
-// Where each country's name pill (and default zoom target) sits (lon, lat).
+// Where each country's name pill sits (lon, lat) while hovered.
 const COUNTRY_LABEL_COORDS = {
   brunei: [114.6, 4.5],
   cambodia: [104.9, 12.7],
@@ -79,10 +68,8 @@ const COUNTRY_LABEL_COORDS = {
   vietnam: [107.3, 16.4],
 };
 
-function aseanFill(isSelected, isHovered) {
-  if (isSelected) return ASEAN_LAND_SELECTED;
-  if (isHovered) return ASEAN_LAND_HOVER;
-  return ASEAN_LAND;
+function aseanFill(isHovered) {
+  return isHovered ? ASEAN_LAND_HOVER : ASEAN_LAND;
 }
 
 // The map is intentionally not draggable / wheel-zoomable by the player — the
@@ -97,49 +84,20 @@ function AseanMap({ selectedCountry, onSelectCountry }) {
     return () => clearTimeout(timer);
   }, []);
 
-  const view = !hasIntroed
-    ? WORLD_VIEW
-    : selectedCountry
-      ? (COUNTRY_VIEWS[selectedCountry] ?? ASEAN_VIEW)
-      : ASEAN_VIEW;
+  // Selecting a country no longer zooms the background map in on it — the
+  // camera stays at the ASEAN-wide view regardless of selection.
+  const view = !hasIntroed ? WORLD_VIEW : ASEAN_VIEW;
 
-  // Markers/labels live inside ZoomableGroup, so without this they'd get
-  // multiplied by the current map zoom (up to 45x for a tiny country like
-  // Singapore) on top of their own pixel size. Scaling their content by the
-  // zoom's reciprocal keeps them a small, constant on-screen size no matter
-  // how zoomed in the map is.
+  // The hover label pill lives inside ZoomableGroup, so without this it'd be
+  // multiplied by the current map zoom on top of its own pixel size. Scaling
+  // it by the zoom's reciprocal keeps it a small, constant on-screen size.
   const markerScale = 1 / view.zoom;
 
   return (
     <div className="relative h-full w-full overflow-hidden" style={{ background: WATER_GRADIENT }}>
-      {/* Ambient sky layer — clouds/plane/boats drifting over the water.
-          Sits behind the map's SVG so land shapes paint over it, and stays
-          fixed on screen (doesn't pan/zoom with the map) like a backdrop. */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        {SKY_DECORATIONS.map((item, i) => (
-          <span
-            key={i}
-            aria-hidden="true"
-            className="floating-icon absolute select-none"
-            style={{
-              top: item.top,
-              left: item.left,
-              fontSize: item.size,
-              opacity: item.opacity,
-              animationDuration: item.duration,
-              animationDelay: item.delay,
-              '--drift-x': item.driftX,
-              '--drift-rotate': item.rotate ?? '0deg',
-            }}
-          >
-            {item.emoji}
-          </span>
-        ))}
-      </div>
       {/* Shifted right while the detail card is open (see CountryDetailPanel,
-          which now sits on the left side of the screen) so the zoomed
-          country lands in the middle of what's still visible instead of
-          being hidden under the card. */}
+          which sits on the left side of the screen) so the map's visible
+          remainder stays roughly centered instead of hiding behind the card. */}
       <div
         className="absolute inset-0"
         style={{
@@ -181,7 +139,6 @@ function AseanMap({ selectedCountry, onSelectCountry }) {
                     const country = ISO_NUMERIC_TO_COUNTRY[geo.id];
                     if (!country) return null;
 
-                    const isSelected = country.name === selectedCountry;
                     const isHovered = country.name === hoveredCountry;
                     // Sand-colored halo drawn first, under the green fill —
                     // its stroke is centered on the coastline, so only the
@@ -197,7 +154,7 @@ function AseanMap({ selectedCountry, onSelectCountry }) {
                       pointerEvents: 'none',
                     };
                     const style = {
-                      fill: aseanFill(isSelected, isHovered),
+                      fill: aseanFill(isHovered),
                       stroke: isHovered ? HOVER_STROKE : ASEAN_STROKE,
                       strokeWidth: isHovered ? 0.6 : 0.4,
                       outline: 'none',
@@ -217,25 +174,7 @@ function AseanMap({ selectedCountry, onSelectCountry }) {
                       </g>
                     );
                   })}
-                  {/* Pass 3: attraction pins — the landmark's own art/emoji sits
-                      directly on the map, no background badge behind it. */}
-                  {ATTRACTIONS.map(({ id, country, coords, emoji }) => (
-                    <Marker key={`pin-${id}`} coordinates={coords}>
-                      <g onClick={() => onSelectCountry(country)} style={{ cursor: 'pointer' }}>
-                        <title>{attractionLabel(id)}</title>
-                        <g transform={`scale(${markerScale})`} style={{ filter: PILL_SHADOW }}>
-                          {attractionImage(id) ? (
-                            <image href={attractionImage(id)} x="-16" y="-16" width="32" height="32" />
-                          ) : (
-                            <text x="0" y="9" textAnchor="middle" fontSize="26">
-                              {emoji}
-                            </text>
-                          )}
-                        </g>
-                      </g>
-                    </Marker>
-                  ))}
-                  {/* Pass 4: country name pill — only while that country is
+                  {/* Pass 3: country name pill — only while that country is
                       hovered, so the map reads clean until you point at one. */}
                   {Object.entries(COUNTRY_LABEL_COORDS).map(([country, coords]) => {
                     if (country !== hoveredCountry) return null;
@@ -252,7 +191,7 @@ function AseanMap({ selectedCountry, onSelectCountry }) {
                             y="0"
                             width={w}
                             height="22"
-                            rx="11"
+                            rx="6"
                             fill="rgba(255,255,255,0.97)"
                             stroke="rgba(11,61,66,0.25)"
                             strokeWidth="1"
@@ -268,7 +207,7 @@ function AseanMap({ selectedCountry, onSelectCountry }) {
                             fontSize="11"
                             fontWeight="700"
                             fill="#1c1917"
-                            className="font-comic"
+                            className="font-momo"
                           >
                             {label}
                           </text>
@@ -281,6 +220,32 @@ function AseanMap({ selectedCountry, onSelectCountry }) {
             </Geographies>
           </ZoomableGroup>
         </ComposableMap>
+      </div>
+
+      {/* Ambient sky layer — clouds/planes/boats drifting over the water.
+          Rendered after (so painted above) the map's SVG land shapes, and
+          stays fixed on screen (doesn't pan/zoom with the map) like a
+          backdrop the player never interacts with. */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        {SKY_DECORATIONS.map((item, i) => (
+          <span
+            key={i}
+            aria-hidden="true"
+            className={`absolute select-none ${item.kind === 'boat' ? 'floating-icon-boat' : 'floating-icon'}`}
+            style={{
+              top: item.top,
+              left: item.left,
+              fontSize: item.size,
+              opacity: item.opacity,
+              animationDuration: item.duration,
+              animationDelay: item.delay,
+              '--drift-x': item.driftX,
+              '--drift-rotate': item.rotate ?? '0deg',
+            }}
+          >
+            {item.emoji}
+          </span>
+        ))}
       </div>
     </div>
   );
