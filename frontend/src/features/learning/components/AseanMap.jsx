@@ -72,6 +72,24 @@ function aseanFill(isHovered) {
   return isHovered ? ASEAN_LAND_HOVER : ASEAN_LAND;
 }
 
+// Singapore's real coastline is only ~35km across — barely a speck at the
+// default ASEAN zoom, even though it's a full member. `path` is Singapore's
+// actual coastline (traced from the same world-50m.json topojson Pass 2
+// renders, centered on its bounding-box midpoint and scaled uniformly —
+// same proportions, just big enough to see and tap) drawn as an oversized
+// island on top of its real (tiny) polygon instead of a generic circle.
+// At this dataset's resolution Singapore's coastline already touches
+// Malaysia's Johor tip, so any enlargement overlaps it unless nudged south
+// — `nudgeY` shifts the drawn shape (not its real anchor point) down so it
+// reads as sitting below Malaysia instead of on top of it.
+const TINY_COUNTRIES = {
+  singapore: {
+    coords: [103.8232, 1.3564],
+    path: 'M5.98,0.98 L-0.15,3.66 L-7,1.27 L-4.81,-2.74 L-0.15,-3.66 L3.5,-2.39 L5.54,-1.48 L7,-0.35 Z',
+    nudgeY: 5,
+  },
+};
+
 // The map is intentionally not draggable / wheel-zoomable by the player — the
 // only camera moves are the scripted world -> ASEAN intro and the per-country
 // "zoom to fit" that happens when a country is tapped.
@@ -139,7 +157,10 @@ function AseanMap({ selectedCountry, onSelectCountry }) {
                     const country = ISO_NUMERIC_TO_COUNTRY[geo.id];
                     if (!country) return null;
 
-                    const isHovered = country.name === hoveredCountry;
+                    // Selected counts as "hovered" too, so the country behind
+                    // the open detail card keeps the same highlight look
+                    // instead of a separate style.
+                    const isHighlighted = country.name === hoveredCountry || country.name === selectedCountry;
                     // Sand-colored halo drawn first, under the green fill —
                     // its stroke is centered on the coastline, so only the
                     // outer half stays visible once the land pass covers the
@@ -148,15 +169,15 @@ function AseanMap({ selectedCountry, onSelectCountry }) {
                     const ringStyle = {
                       fill: 'none',
                       stroke: ASEAN_SAND_RING,
-                      strokeWidth: isHovered ? 0.9 : 0.7,
+                      strokeWidth: isHighlighted ? 0.9 : 0.7,
                       strokeLinejoin: 'round',
                       outline: 'none',
                       pointerEvents: 'none',
                     };
                     const style = {
-                      fill: aseanFill(isHovered),
-                      stroke: isHovered ? HOVER_STROKE : ASEAN_STROKE,
-                      strokeWidth: isHovered ? 0.6 : 0.4,
+                      fill: aseanFill(isHighlighted),
+                      stroke: isHighlighted ? HOVER_STROKE : ASEAN_STROKE,
+                      strokeWidth: isHighlighted ? 0.6 : 0.4,
                       outline: 'none',
                       cursor: 'pointer',
                       transition: 'fill 120ms ease-out, stroke-width 120ms ease-out',
@@ -174,37 +195,72 @@ function AseanMap({ selectedCountry, onSelectCountry }) {
                       </g>
                     );
                   })}
-                  {/* Pass 3: country name pill — only while that country is
+                  {/* Pass 3: oversized proxy "island" for countries too tiny
+                      to see/tap at this zoom (see TINY_COUNTRIES above) —
+                      traces the country's real coastline, just scaled up. */}
+                  {Object.entries(TINY_COUNTRIES).map(([name, { coords, path, nudgeY }]) => {
+                    const isHighlighted = name === hoveredCountry || name === selectedCountry;
+                    return (
+                      <Marker key={`tiny-${name}`} coordinates={coords}>
+                        <g
+                          transform={`scale(${markerScale}) translate(0, ${nudgeY})`}
+                          onClick={() => onSelectCountry(name)}
+                          onMouseEnter={() => setHoveredCountry(name)}
+                          onMouseLeave={() => setHoveredCountry(null)}
+                          style={{ cursor: 'pointer', filter: ISLAND_SHADOW }}
+                        >
+                          <path d={path} fill="none" stroke={ASEAN_SAND_RING} strokeWidth={3} strokeLinejoin="round" />
+                          <path
+                            d={path}
+                            fill={aseanFill(isHighlighted)}
+                            stroke={isHighlighted ? HOVER_STROKE : ASEAN_STROKE}
+                            strokeWidth={isHighlighted ? 1.2 : 0.8}
+                            strokeLinejoin="round"
+                          />
+                        </g>
+                      </Marker>
+                    );
+                  })}
+                  {/* Pass 4: country name pill — only while that country is
                       hovered, so the map reads clean until you point at one. */}
                   {Object.entries(COUNTRY_LABEL_COORDS).map(([country, coords]) => {
                     if (country !== hoveredCountry) return null;
                     const label = country.replace(/_/g, ' ');
-                    const w = label.length * 5.6 + 28;
+                    const hasFlag = Boolean(FLAG_IMAGE_BY_COUNTRY[country]);
+                    // Text starts right after the flag (or at the left pad if
+                    // there isn't one) instead of being centered against a
+                    // fudge-factored midpoint — that's what let long labels
+                    // in the wider Momo Trust Display font spill past the
+                    // card's right edge.
+                    const leftPad = 8;
+                    const flagGap = hasFlag ? 24 : 0;
+                    const textX = leftPad + flagGap;
+                    const w = textX + label.length * 7.4 + 12;
                     return (
                       <Marker key={`label-${country}`} coordinates={coords}>
                         <g
-                          transform={`scale(${markerScale}) translate(${-w / 2}, -11)`}
+                          transform={`scale(${markerScale}) translate(${-w / 2}, -13)`}
                           style={{ pointerEvents: 'none' }}
                         >
                           <rect
                             x="0"
                             y="0"
                             width={w}
-                            height="22"
-                            rx="6"
+                            height="26"
+                            rx="7"
                             fill="rgba(255,255,255,0.97)"
                             stroke="rgba(11,61,66,0.25)"
                             strokeWidth="1"
                             style={{ filter: PILL_SHADOW }}
                           />
-                          {FLAG_IMAGE_BY_COUNTRY[country] && (
-                            <image href={FLAG_IMAGE_BY_COUNTRY[country]} x="5" y="5" width="16" height="12" />
+                          {hasFlag && (
+                            <image href={FLAG_IMAGE_BY_COUNTRY[country]} x={leftPad} y="7" width="18" height="13" />
                           )}
                           <text
-                            x={(w + 24) / 2}
-                            y="15"
-                            textAnchor="middle"
-                            fontSize="11"
+                            x={textX}
+                            y="18"
+                            textAnchor="start"
+                            fontSize="12"
                             fontWeight="700"
                             fill="#1c1917"
                             className="font-momo"
