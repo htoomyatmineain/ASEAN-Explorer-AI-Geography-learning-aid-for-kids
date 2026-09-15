@@ -18,6 +18,10 @@
 % routes.pl — server.pl just loads them (docs/02 §2.2), so adding a feature
 % means adding one line here, not editing someone else's routes.
 :- http_handler(root(country/Name), handle_country(Name), []).
+% /neighbors/:name is the same kind of thin wrapper, around core.pl's
+% neighbors_of/2 (bordering countries — not filtered to ASEAN members, so a
+% country like Myanmar also lists China/India/Bangladesh).
+:- http_handler(root(neighbors/Name), handle_neighbors(Name), []).
 :- [features/guess_game/routes].
 :- [features/neighbor_game/routes].
 :- [features/capital_match/routes].
@@ -82,3 +86,9 @@ handle_country(NameAtom, _Request) :-
         )
     ; reply_json_dict(_{ error: "Country not found" }, [status(404)])
     ).
+
+% /neighbors/:name - Implemented
+handle_neighbors(NameAtom, _Request) :-
+    cors_enable,
+    neighbors_of(NameAtom, Neighbors),
+    reply_json_dict(_{ country: NameAtom, neighbors: Neighbors }).

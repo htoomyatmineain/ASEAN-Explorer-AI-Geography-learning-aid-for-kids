@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getCountryInfo } from '../learningApi';
+import { getCountryInfo, getNeighbors } from '../learningApi';
 import { FLAG_IMAGE_BY_COUNTRY } from '../../guess-game/clueOptions';
 
 // A single fact row, e.g. "Capital: Hanoi" — data always comes from the
@@ -10,6 +10,91 @@ function InfoRow({ label, value }) {
     <p className="font-comic text-lg text-slate-700">
       <span className="font-bold text-slate-900">{label}:</span> <span className="capitalize">{value}</span>
     </p>
+  );
+}
+
+const humanize = (s) => String(s).replace(/_/g, ' ');
+const listOrNone = (arr) => (arr?.length > 0 ? arr.map(humanize).join(', ') : 'none listed');
+
+// Slash commands answered straight from the /country/:name card already
+// loaded above — no extra request needed for these.
+const CARD_COMMANDS = {
+  capital: (card) => humanize(card.capital),
+  currency: (card) => humanize(card.currency),
+  region: (card) => humanize(card.region),
+  animals: (card) => listOrNone(card.animals),
+  foods: (card) => listOrNone(card.foods),
+  famous: (card) => listOrNone(card.famous_for),
+};
+
+const HELP_TEXT = 'Try /neighbors, /capital, /currency, /region, /animals, or /foods.';
+
+// Slash commands hit real Prolog-backed data (the card already in hand, or
+// GET /neighbors/:name); free-form text just gets a nudge toward them for now.
+function AskAboutCountry({ card }) {
+  const [messages, setMessages] = useState([]);
+  const [draft, setDraft] = useState('');
+  const countryLabel = humanize(card.country);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    const question = draft.trim();
+    if (!question) return;
+    setMessages((prev) => [...prev, { role: 'user', text: question }]);
+    setDraft('');
+
+    if (!question.startsWith('/')) {
+      setMessages((prev) => [
+        ...prev,
+        { role: 'ai', text: `Free-form chat is coming soon — ${HELP_TEXT}` },
+      ]);
+      return;
+    }
+
+    const command = question.slice(1).trim().toLowerCase();
+    if (command === 'neighbors') {
+      const { neighbors } = await getNeighbors(card.country);
+      const text = neighbors.length ? neighbors.map(humanize).join(', ') : 'No bordering countries on record.';
+      setMessages((prev) => [...prev, { role: 'ai', text }]);
+      return;
+    }
+    if (CARD_COMMANDS[command]) {
+      setMessages((prev) => [...prev, { role: 'ai', text: CARD_COMMANDS[command](card) }]);
+      return;
+    }
+    setMessages((prev) => [...prev, { role: 'ai', text: HELP_TEXT }]);
+  }
+
+  return (
+    <div className="mt-2 w-full text-left">
+      <p className="font-comic text-lg font-bold text-slate-900">
+        Ask about {countryLabel}:
+      </p>
+      {messages.length > 0 && (
+        <div className="mt-2 flex max-h-40 flex-col gap-2 overflow-y-auto rounded-2xl bg-slate-50 p-3">
+          {messages.map((m, i) => (
+            <p key={i} className="font-comic text-sm text-slate-700">
+              <span className="font-bold text-sky-700">{m.role === 'user' ? 'You' : 'Kiko'}:</span> {m.text}
+            </p>
+          ))}
+        </div>
+      )}
+      <form onSubmit={handleSubmit} className="mt-2 flex gap-2">
+        <input
+          type="text"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          placeholder="Try /neighbors"
+          className="flex-1 rounded-full border border-slate-200 px-4 py-2 font-comic text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-300"
+        />
+        <button
+          type="submit"
+          className="rounded-full bg-sky-500 px-4 py-2 font-comic text-sm font-bold text-white hover:bg-sky-600"
+        >
+          Ask
+        </button>
+      </form>
+    </div>
   );
 }
 
@@ -110,6 +195,8 @@ function CountryDetailPanel({ countryName, onClose }) {
                 </div>
               </div>
             )}
+
+            <AskAboutCountry card={card} />
           </div>
         )}
       </motion.div>
