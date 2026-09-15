@@ -37,10 +37,14 @@ function LearningPage() {
         </span>
       </div>
 
-      {/* Detail card sits on the left, with a gap from every edge instead of
-          flush against the screen. */}
+      {/* Detail card sits on the left, gapped from every edge. Bounded top
+          and bottom so it can never render partly below the viewport — the
+          page itself doesn't scroll (root is h-screen/overflow-hidden), so
+          unbounded card growth was clipping the bottom of longer cards with
+          no way to reach it. The card only scrolls internally, and only if
+          its content is actually taller than this box. */}
       {selectedCountry && (
-        <div className="absolute bottom-6 left-6 top-24 z-20 w-[calc(100%-3rem)] sm:w-[30%]">
+        <div className="absolute left-6 top-32 bottom-6 z-20 w-[calc(100%-3rem)] sm:w-[30%]">
           <CountryDetailPanel countryName={selectedCountry} onClose={() => setSelectedCountry(null)} />
         </div>
       )}

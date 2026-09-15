@@ -7,7 +7,7 @@ import { FLAG_IMAGE_BY_COUNTRY } from '../../guess-game/clueOptions';
 // Prolog knowledge base's country_info/2 response, never hardcoded here.
 function InfoRow({ label, value }) {
   return (
-    <p className="font-comic text-lg text-slate-700">
+    <p className="font-momo text-lg text-slate-700">
       <span className="font-bold text-slate-900">{label}:</span> <span className="capitalize">{value}</span>
     </p>
   );
@@ -99,9 +99,10 @@ function AskAboutCountry({ card }) {
 }
 
 // Floats over the left side of the map with a gap on every edge (see
-// Learning.page.jsx, which positions this panel and shifts/zooms the map to
-// make room for it) — not flush against the screen, so it's rounded on all
-// four corners rather than just the inner edge.
+// Learning.page.jsx, which bounds this panel's box top-to-bottom) — not
+// flush against the screen, so it's rounded on all four corners rather than
+// just the inner edge. Scrolls internally only if its content is actually
+// taller than that box, instead of growing past the viewport and clipping.
 function CountryDetailPanel({ countryName, onClose }) {
   const [card, setCard] = useState(null);
 
@@ -134,7 +135,7 @@ function CountryDetailPanel({ countryName, onClose }) {
 
         {!card ? (
           <div className="flex flex-1 items-center justify-center">
-            <span className="font-comic text-lg text-slate-400">Loading…</span>
+            <span className="font-momo text-lg text-slate-400">Loading…</span>
           </div>
         ) : (
           <div className="flex flex-col items-center gap-3 pt-4 text-center">
@@ -146,11 +147,11 @@ function CountryDetailPanel({ countryName, onClose }) {
               alt=""
               className="h-16 w-24 rounded-lg object-cover shadow"
             />
-            <h2 className="font-display text-3xl capitalize text-slate-900">
+            <h2 className="font-momo text-3xl capitalize text-slate-900">
               {card.country.replace(/_/g, ' ')}
             </h2>
             {card.asean_member === 'yes' && (
-              <span className="rounded-full bg-sky-100 px-3 py-1 font-comic text-sm font-bold uppercase tracking-wide text-sky-700">
+              <span className="rounded-full bg-sky-100 px-3 py-1 font-momo text-sm font-bold uppercase tracking-wide text-sky-700">
                 ASEAN Member{card.member_since ? ` since ${card.member_since}` : ''}
               </span>
             )}
@@ -166,12 +167,12 @@ function CountryDetailPanel({ countryName, onClose }) {
 
             {card.famous_for?.length > 0 && (
               <div className="mt-2 w-full text-left">
-                <p className="font-comic text-lg font-bold text-slate-900">Famous for:</p>
+                <p className="font-momo text-lg font-bold text-slate-900">Famous for:</p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {card.famous_for.map((fact) => (
                     <span
                       key={fact}
-                      className="rounded-full bg-lime-200 px-3 py-1 font-comic text-sm font-bold capitalize text-lime-900"
+                      className="rounded-full bg-lime-200 px-3 py-1 font-momo text-sm font-bold capitalize text-lime-900"
                     >
                       {fact.replace(/_/g, ' ')}
                     </span>
@@ -182,12 +183,12 @@ function CountryDetailPanel({ countryName, onClose }) {
 
             {card.foods?.length > 0 && (
               <div className="mt-2 w-full text-left">
-                <p className="font-comic text-lg font-bold text-slate-900">Tasty foods:</p>
+                <p className="font-momo text-lg font-bold text-slate-900">Tasty foods:</p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {card.foods.map((food) => (
                     <span
                       key={food}
-                      className="rounded-full bg-amber-200 px-3 py-1 font-comic text-sm font-bold capitalize text-amber-900"
+                      className="rounded-full bg-amber-200 px-3 py-1 font-momo text-sm font-bold capitalize text-amber-900"
                     >
                       {food.replace(/_/g, ' ')}
                     </span>
