@@ -7,9 +7,13 @@ import { useI18n } from '../../shared/i18n/I18nContext';
 // Same asset as the entrance page's logo (frontend/src/features/home/Home.page.jsx)
 // — filename has a space, so it stays percent-encoded.
 const LOGO_IMAGE = '/assets/logo/ASEAN%20explorer.png';
+const SETTINGS_ICON = '/assets/icons/settings.png';
 
 const BACK_BUTTON =
   'flex shrink-0 items-center justify-center gap-2 rounded-xl border-b-4 border-rose-700 bg-rose-500 px-6 py-3.5 text-xl font-extrabold uppercase tracking-wide text-white [text-shadow:_0_2px_4px_rgb(0_0_0_/_60%)] shadow-[0_3px_0_0_rgb(190,18,60)] transition-transform duration-100 ease-out active:translate-y-[3px] active:border-b-0 active:shadow-none';
+
+const SETTINGS_BUTTON =
+  'flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-xl border-b-4 border-lime-600 bg-lime-400 shadow-[0_3px_0_0_rgb(101,163,13)] transition-transform duration-100 ease-out active:translate-y-[3px] active:border-b-0 active:shadow-none';
 
 // The map fills the entire viewport — logo, hint text, the detail card and
 // the bottom nav are all overlays floating on top of it, not a separate
@@ -52,6 +56,9 @@ function LearningPage() {
         <button type="button" onClick={() => navigate('/main-menu')} className={BACK_BUTTON}>
           {t('common.back')}
         </button>
+        <Link to="/settings" aria-label={t('common.settingsAria')} className={SETTINGS_BUTTON}>
+          <img src={SETTINGS_ICON} alt="" className="h-7 w-7" />
+        </Link>
       </div>
     </div>
   );

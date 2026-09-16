@@ -12,6 +12,7 @@ export const UI = {
     'common.checking': 'Checking…',
     'common.back': 'Back',
     'common.close': 'Close',
+    'common.settingsAria': 'Settings',
 
     'home.pressStart': 'Press ANY key to start',
 
@@ -123,6 +124,7 @@ export const UI = {
     'common.checking': 'စစ်ဆေးနေသည်…',
     'common.back': 'နောက်သို့',
     'common.close': 'ပိတ်ရန်',
+    'common.settingsAria': 'ဆက်တင်များ',
 
     'home.pressStart': 'စတင်ရန် ခလုတ်တစ်ခုခု နှိပ်ပါ',
 

@@ -5,6 +5,7 @@ import { useI18n } from '../../../shared/i18n/I18nContext';
 // — filename has a space, so it stays percent-encoded.
 const LOGO_IMAGE = '/assets/logo/ASEAN%20explorer.png';
 const BACKGROUND_IMAGE = '/assets/background/learning.png';
+const SETTINGS_ICON = '/assets/icons/settings.png';
 
 const NAV_ITEM_DEFS = [
   { to: '/explore', key: 'nav.learning' },
@@ -81,6 +82,14 @@ function Layout({ children }) {
       )}
 
       <main className="mx-auto max-w-5xl px-6 py-8">{children}</main>
+
+      <Link
+        to="/settings"
+        aria-label={t('common.settingsAria')}
+        className="fixed bottom-6 right-6 flex h-16 w-16 items-center justify-center rounded-2xl border-b-[5px] border-lime-600 bg-lime-400 shadow-[0_4px_0_0_rgb(101,163,13)] transition-transform duration-100 ease-out active:translate-y-[5px] active:border-b-0 active:shadow-none"
+      >
+        <img src={SETTINGS_ICON} alt="" className="h-9 w-9" />
+      </Link>
     </div>
   );
 }
