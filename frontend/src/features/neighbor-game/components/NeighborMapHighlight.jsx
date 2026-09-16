@@ -1,11 +1,13 @@
 import { motion } from 'framer-motion';
 import { FLAG_IMAGE_BY_COUNTRY } from '../../guess-game/clueOptions';
+import { useI18n } from '../../../shared/i18n/I18nContext';
 
 // One chip per candidate country: flag + name. Before checking, chips are
 // tappable (the child picks the odd one out); after checking, the backend's
 // non_neighbors answer key colors them — green ✓ = real neighbor, red ✗ = the
 // non-neighbor(s), i.e. the correct pick(s).
 function NeighborMapHighlight({ candidates, pick, nonNeighbors, status, onPick }) {
+  const { tWord } = useI18n();
   const done = status === 'done';
 
   return (
@@ -55,7 +57,7 @@ function NeighborMapHighlight({ candidates, pick, nonNeighbors, status, onPick }
               alt=""
               className="h-10 w-14 rounded object-cover"
             />
-            <span className="text-center text-base leading-tight">{candidate.replace(/_/g, ' ')}</span>
+            <span className="text-center text-base leading-tight">{tWord(candidate)}</span>
           </button>
         );
       })}

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AseanMap from './components/AseanMap';
 import CountryDetailPanel from './components/CountryDetailPanel';
+import { useI18n } from '../../shared/i18n/I18nContext';
 
 // Same asset as the entrance page's logo (frontend/src/features/home/Home.page.jsx)
 // — filename has a space, so it stays percent-encoded.
@@ -20,6 +21,7 @@ const SETTINGS_BUTTON =
 function LearningPage() {
   const [selectedCountry, setSelectedCountry] = useState(null);
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   return (
     <div className="relative h-screen w-full overflow-hidden">
@@ -33,7 +35,7 @@ function LearningPage() {
       <div className="pointer-events-none absolute right-6 top-6 z-20">
         <span className="inline-flex items-center gap-2 rounded-2xl border-2 border-b-[5px] border-sky-400 bg-white/90 px-4 py-2.5 font-comic text-base font-bold text-sky-800 shadow-[0_3px_0_0_rgb(14,165,233)]">
           <span aria-hidden="true" className="inline-block animate-bounce">👆</span>
-          Tap a country to learn about it!
+          {t('learning.hint')}
         </span>
       </div>
 
@@ -52,9 +54,9 @@ function LearningPage() {
       {/* Bottom nav bar. */}
       <div className="absolute bottom-4 right-4 z-20 flex items-center gap-3">
         <button type="button" onClick={() => navigate('/main-menu')} className={BACK_BUTTON}>
-          Back
+          {t('common.back')}
         </button>
-        <Link to="/settings" aria-label="Settings" className={SETTINGS_BUTTON}>
+        <Link to="/settings" aria-label={t('common.settingsAria')} className={SETTINGS_BUTTON}>
           <img src={SETTINGS_ICON} alt="" className="h-7 w-7" />
         </Link>
       </div>

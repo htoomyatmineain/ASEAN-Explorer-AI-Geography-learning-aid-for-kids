@@ -3,6 +3,7 @@ import Card from '../../../shared/components/Card/Card';
 import TopicScoreBar from './TopicScoreBar';
 import RecommendedActivityCard from './RecommendedActivityCard';
 import { getAllScores, getRecommendation } from '../dashboardApi';
+import { useI18n } from '../../../shared/i18n/I18nContext';
 
 // Overall = average of the recorded topic scores, rounded for display.
 function averageScore(scores) {
@@ -12,6 +13,7 @@ function averageScore(scores) {
 }
 
 function ScoreDashboard() {
+  const { t } = useI18n();
   // null = still loading; [] = loaded with nothing recorded yet.
   const [scores, setScores] = useState(null);
   const [recommendation, setRecommendation] = useState(null);
@@ -29,18 +31,18 @@ function ScoreDashboard() {
     <Card className="flex flex-col gap-4">
       {scores === null ? (
         <p className="m-0 text-center text-lg font-semibold text-stone-500">
-          Loading your progress…
+          {t('dashboard.loading')}
         </p>
       ) : scores.length === 0 ? (
         <p className="m-0 text-center text-lg font-semibold text-stone-500">
-          No progress yet — play a game to earn your first score!
+          {t('dashboard.empty')}
         </p>
       ) : (
         <>
           <div className="flex items-center justify-between">
-            <h2 className="m-0 text-lg font-extrabold text-stone-800">Topic scores</h2>
+            <h2 className="m-0 text-lg font-extrabold text-stone-800">{t('dashboard.topicScores')}</h2>
             <span className="rounded-full bg-sky-100 px-3 py-1 text-sm font-extrabold text-sky-700">
-              Overall: {overall}%
+              {t('dashboard.overall', { percent: overall })}
             </span>
           </div>
           {scores.map(({ topic, score }) => (

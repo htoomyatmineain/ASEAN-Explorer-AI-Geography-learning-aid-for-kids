@@ -2,10 +2,10 @@ import { motion } from 'framer-motion';
 import {
   CLUE_ICON_BY_TYPE,
   CLUE_ICON_SRC_BY_TYPE,
-  CLUE_LABEL_BY_TYPE,
   FLAG_IMAGE_BY_COUNTRY,
   LANDMARK_IMAGE_BY_VALUE,
 } from '../clueOptions';
+import { useI18n } from '../../../shared/i18n/I18nContext';
 
 // Rotation cycles through 4 jaunty angles like sticky notes pinned to a corkboard.
 const ROTATIONS = [-3, 2, -1.5, 3];
@@ -20,9 +20,10 @@ function thumbnailFor(clue) {
 }
 
 function ClueCard({ clue, index, onRemove }) {
+  const { tWord } = useI18n();
   const iconSrc = CLUE_ICON_SRC_BY_TYPE[clue.type];
   const icon = CLUE_ICON_BY_TYPE[clue.type] ?? '❓';
-  const typeLabel = CLUE_LABEL_BY_TYPE[clue.type] ?? clue.type.replace(/_/g, ' ');
+  const typeLabel = tWord(clue.type);
   const rotation = ROTATIONS[index % ROTATIONS.length];
   const thumbnail = thumbnailFor(clue);
 
@@ -47,7 +48,7 @@ function ClueCard({ clue, index, onRemove }) {
         {typeLabel}
       </span>
       <span className="text-center text-lg font-extrabold capitalize text-stone-900">
-        {clue.value.replace(/_/g, ' ')}
+        {tWord(clue.value)}
       </span>
       {onRemove && (
         <button

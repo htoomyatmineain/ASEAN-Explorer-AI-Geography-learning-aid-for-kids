@@ -7,13 +7,14 @@ import { FLAG_IMAGE_BY_COUNTRY, COUNTRY_CARD_IMAGE, KIKO } from '../clueOptions'
 import { CHALLENGE_ROUNDS, GUESSABLE_COUNTRIES } from '../challengeRounds';
 import { useGame } from '../../../shared/state/GameContext';
 import { setTopicScore as postTopicScore } from '../../dashboard/dashboardApi';
+import { useI18n } from '../../../shared/i18n/I18nContext';
 
-function mascotLine(guess, result, isChecking) {
-  if (isChecking) return 'Let me check with the map…';
-  if (result?.correct) return 'Ta-da! You got it! 🎉';
-  if (result && !result.correct) return "Ooh, so close! Let's see the answer.";
-  if (guess) return 'Locked it in — hit "Check my guess" when ready!';
-  return 'Look at the clues, then pick the country you think it is!';
+function mascotLine(t, guess, result, isChecking) {
+  if (isChecking) return t('guess.mascot.checking');
+  if (result?.correct) return t('guess.mascot.correct');
+  if (result && !result.correct) return t('guess.mascot.wrong');
+  if (guess) return t('guess.mascot.locked');
+  return t('guess.mascot.idle');
 }
 
 function mascotPose(guess, result, isChecking) {
@@ -23,7 +24,16 @@ function mascotPose(guess, result, isChecking) {
   return KIKO.hello;
 }
 
+// Known raw error strings the backend sends back verbatim (Prolog reply_json
+// text is always English) — translated here at the point of display instead
+// of touching server.pl. Anything unrecognized falls back to the raw text.
+function translateBackendError(t, raw) {
+  if (raw === 'no country matches those clues') return t('guess.noMatchError');
+  return raw;
+}
+
 function GuessGame() {
+  const { t, tWord } = useI18n();
   const [roundIndex, setRoundIndex] = useState(0);
   const [guess, setGuess] = useState(null);
   const [result, setResult] = useState(null);
@@ -61,10 +71,10 @@ function GuessGame() {
         setTopicScore('flags_and_currencies', score);
         postTopicScore('flags_and_currencies', score).catch(() => {});
       } else {
-        setResult({ error: response?.error || 'The Guess the Country backend is not available right now.' });
+        setResult({ error: response?.error ? translateBackendError(t, response.error) : t('guess.backendError') });
       }
     } catch (err) {
-      setResult({ error: 'The Guess the Country backend is not available right now.' });
+      setResult({ error: t('guess.backendError') });
     } finally {
       setIsChecking(false);
       setResultKey((k) => k + 1);
@@ -115,7 +125,7 @@ function GuessGame() {
             />
           </AnimatePresence>
         </motion.div>
-        <p className="m-0 text-xl font-bold text-[#7c2d12]">{mascotLine(guess, result, isChecking)}</p>
+        <p className="m-0 text-xl font-bold text-[#7c2d12]">{mascotLine(t, guess, result, isChecking)}</p>
       </div>
 
       {/* Step 1: the clues (read-only) */}
@@ -124,9 +134,9 @@ function GuessGame() {
           <span className="flex h-[38px] w-[38px] flex-none items-center justify-center rounded-full bg-sky-500 text-lg font-extrabold text-white">
             1
           </span>
-          <h2 className="m-0 text-2xl font-extrabold text-[#7c2d12]">Here are your clues</h2>
+          <h2 className="m-0 text-2xl font-extrabold text-[#7c2d12]">{t('guess.step1Title')}</h2>
           <span className="rounded-full bg-[#fef3c7] px-4 py-1 text-sm font-bold text-[#7c2d12]">
-            Round {roundIndex + 1} of {CHALLENGE_ROUNDS.length}
+            {t('guess.round', { current: roundIndex + 1, total: CHALLENGE_ROUNDS.length })}
           </span>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-3.5 rounded-[22px] border-4 border-dashed border-[#e7c9a0] bg-white p-[18px]">
@@ -142,15 +152,15 @@ function GuessGame() {
           <span className="flex h-[38px] w-[38px] flex-none items-center justify-center rounded-full bg-sky-500 text-lg font-extrabold text-white">
             2
           </span>
-          <h2 className="m-0 text-2xl font-extrabold text-[#7c2d12]">Which country is it?</h2>
+          <h2 className="m-0 text-2xl font-extrabold text-[#7c2d12]">{t('guess.step2Title')}</h2>
         </div>
         {/* The full pickable list in words, so every country (Indonesia included)
             is spelled out right under the question. */}
         <p className="m-0 text-center text-sm font-semibold text-[#a16207]">
-          Pick one of:{' '}
+          {t('guess.pickOneOf')}{' '}
           {GUESSABLE_COUNTRIES.map((country, index) => (
             <span key={country}>
-              <span className="capitalize">{country.replace(/_/g, ' ')}</span>
+              <span className="capitalize">{tWord(country)}</span>
               {index < GUESSABLE_COUNTRIES.length - 1 ? ' · ' : ''}
             </span>
           ))}
@@ -212,7 +222,7 @@ function GuessGame() {
                   </motion.span>
                 )}
                 <img src={FLAG_IMAGE_BY_COUNTRY[country]} alt="" className="h-10 w-14 rounded object-cover" />
-                <span className="text-center text-base leading-tight">{country.replace(/_/g, ' ')}</span>
+                <span className="text-center text-base leading-tight">{tWord(country)}</span>
               </button>
             );
           })}
@@ -234,14 +244,14 @@ function GuessGame() {
           {isChecking && (
             <span className="h-[22px] w-[22px] animate-spin rounded-full border-4 border-white/40 border-t-white" />
           )}
-          {isChecking ? 'Checking…' : '✅ Check my guess'}
+          {isChecking ? t('common.checking') : t('guess.checkButton')}
         </button>
         <button
           type="button"
           onClick={nextRound}
           className="min-h-[56px] rounded-full bg-[#fef3c7] px-7 py-[15px] text-lg font-extrabold text-[#7c2d12] shadow-[0_6px_0_#e7c9a0] transition-transform hover:-translate-y-1 active:translate-y-[3px] active:shadow-[0_2px_0_#e7c9a0]"
         >
-          ➡️ Next question
+          {t('guess.nextButton')}
         </button>
       </div>
 
@@ -256,9 +266,9 @@ function GuessGame() {
           >
             <Confetti burstKey={resultKey} />
             <div className="text-5xl leading-none">🎉</div>
-            <p className="m-0 text-xl font-bold text-[#7c2d12]">You're right! It was</p>
+            <p className="m-0 text-xl font-bold text-[#7c2d12]">{t('guess.correctIntro')}</p>
             <p className="m-0 text-center text-4xl font-extrabold capitalize leading-tight text-sky-600">
-              {result.answer.replace(/_/g, ' ')}
+              {tWord(result.answer)}
             </p>
             {COUNTRY_CARD_IMAGE[result.answer] && (
               <img
@@ -280,8 +290,7 @@ function GuessGame() {
             <div className="flex items-center gap-3">
               <span className="text-3xl leading-none" aria-hidden="true">🙈</span>
               <p className="m-0 text-lg font-bold text-red-600">
-                Not quite! You guessed {guess?.replace(/_/g, ' ')}, but it was actually{' '}
-                {result.answer.replace(/_/g, ' ')}.
+                {t('guess.wrongIntro', { guess: tWord(guess), answer: tWord(result.answer) })}
               </p>
             </div>
             {COUNTRY_CARD_IMAGE[result.answer] && (

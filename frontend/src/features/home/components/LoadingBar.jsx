@@ -1,15 +1,17 @@
 import { motion } from 'framer-motion';
+import { useI18n } from '../../../shared/i18n/I18nContext';
 
 // Shown after the "Press ANY key to start" prompt is triggered — fills once,
 // then hands off to onComplete (the entrance page navigates to /main-menu).
 const LOAD_DURATION_SECONDS = 1.2;
 
 function LoadingBar({ onComplete }) {
+  const { t } = useI18n();
   return (
     <div className="w-[80vw] max-w-xs">
       <p className="mb-2 text-center text-xl font-extrabold uppercase tracking-wide text-white
                      [text-shadow:_0_2px_4px_rgb(0_0_0_/_60%)]">
-        Loading...
+        {t('common.loading')}
       </p>
       <div className="h-5 w-full overflow-hidden rounded-full border-2 border-black bg-white/70">
         <motion.div

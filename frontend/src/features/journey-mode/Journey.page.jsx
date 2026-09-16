@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import ProgressMap from './components/ProgressMap';
+import { useI18n } from '../../shared/i18n/I18nContext';
 
 // Same asset as the entrance page's logo (frontend/src/features/home/Home.page.jsx)
 // — filename has a space, so it stays percent-encoded.
@@ -16,6 +17,7 @@ const BACK_BUTTON =
 // URL (/journey) can also be opened directly in a new browser tab.
 function JourneyPage() {
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   return (
     <div className="relative min-h-screen">
@@ -32,10 +34,10 @@ function JourneyPage() {
           <img src={LOGO_IMAGE} alt="ASEAN Explorer" className="h-14 w-auto drop-shadow-lg" />
         </Link>
         <span className="absolute left-1/2 hidden -translate-x-1/2 text-3xl font-extrabold uppercase tracking-wide text-white [text-shadow:_0_2px_4px_rgb(0_0_0_/_60%)] md:block">
-          Journey Mode
+          {t('journey.title')}
         </span>
         <button type="button" onClick={() => navigate('/practice')} className={BACK_BUTTON}>
-          ← Practice
+          {t('common.backToPractice')}
         </button>
       </header>
 

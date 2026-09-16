@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion';
 import { FLAG_IMAGE_BY_COUNTRY } from '../../guess-game/clueOptions';
+import { useI18n } from '../../../shared/i18n/I18nContext';
 
 // Tappable country card: flag + name. Selected = picked for matching;
 // matched = its capital was found and the pair is locked in.
 function CountryDragCard({ name, selected, matched, onSelect }) {
+  const { tWord } = useI18n();
   return (
     <button
       type="button"
@@ -37,7 +39,7 @@ function CountryDragCard({ name, selected, matched, onSelect }) {
         </span>
       )}
       <img src={FLAG_IMAGE_BY_COUNTRY[name]} alt="" className="h-10 w-14 rounded object-cover" />
-      <span className="text-center text-base leading-tight">{name.replace(/_/g, ' ')}</span>
+      <span className="text-center text-base leading-tight">{tWord(name)}</span>
     </button>
   );
 }

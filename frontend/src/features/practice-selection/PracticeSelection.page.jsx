@@ -2,33 +2,34 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { KIKO, FLAG_IMAGE_BY_COUNTRY } from '../guess-game/clueOptions';
+import { useI18n } from '../../shared/i18n/I18nContext';
 
 const LOGO_IMAGE = '/assets/logo/ASEAN%20explorer.png';
 const SETTINGS_ICON = '/assets/icons/nav-03.png';
 
-const GAME_MODES = [
+const GAME_MODE_DEFS = [
   {
     to: '/journey',
-    label: 'Journey Mode',
+    labelKey: 'modes.journey',
     emoji: '🗺️',
     className: 'border-sky-600 bg-sky-400 shadow-[0_6px_0_0_rgb(2,132,199)]',
   },
   {
     to: '/guess',
-    label: 'Guess the Country',
+    labelKey: 'modes.guess',
     image: KIKO.hello,
     imageAlt: 'Kiko the parrot mascot waving hello',
     className: 'border-lime-600 bg-lime-400 shadow-[0_6px_0_0_rgb(101,163,13)]',
   },
   {
     to: '/neighbors',
-    label: 'Neighbor Quiz',
+    labelKey: 'modes.neighbors',
     emoji: '🧭',
     className: 'border-amber-600 bg-amber-400 shadow-[0_6px_0_0_rgb(217,119,6)]',
   },
   {
     to: '/capitals',
-    label: 'Capital Match',
+    labelKey: 'modes.capitals',
     flagPreview: 'thailand',
     className: 'border-rose-700 bg-rose-500 shadow-[0_6px_0_0_rgb(190,18,60)]',
   },
@@ -60,6 +61,8 @@ const SETTINGS_BUTTON =
 function PracticeSelectionPage() {
   const [index, setIndex] = useState(0);
   const navigate = useNavigate();
+  const { t } = useI18n();
+  const GAME_MODES = GAME_MODE_DEFS.map((m) => ({ ...m, label: t(m.labelKey) }));
 
   const goTo = (direction) => {
     setIndex((current) => (current + direction + GAME_MODES.length) % GAME_MODES.length);
@@ -96,11 +99,11 @@ function PracticeSelectionPage() {
 
       <main className="relative z-10 flex flex-1 flex-col items-center justify-center gap-8 px-6 pb-8">
         <h1 className="font-display text-center text-4xl uppercase tracking-wide text-amber-900 [text-shadow:_0_2px_0_rgb(255_255_255_/_50%)] sm:text-6xl">
-          Choose a Practice Mode
+          {t('practice.title')}
         </h1>
 
         <div className="flex w-full max-w-5xl items-center justify-center gap-4 sm:gap-8">
-          <button type="button" onClick={() => goTo(-1)} aria-label="Previous" className={NAV_ARROW}>
+          <button type="button" onClick={() => goTo(-1)} aria-label={t('practice.prevAria')} className={NAV_ARROW}>
             ‹
           </button>
 
@@ -142,7 +145,7 @@ function PracticeSelectionPage() {
             </AnimatePresence>
           </div>
 
-          <button type="button" onClick={() => goTo(1)} aria-label="Next" className={NAV_ARROW}>
+          <button type="button" onClick={() => goTo(1)} aria-label={t('practice.nextAria')} className={NAV_ARROW}>
             ›
           </button>
         </div>
@@ -150,9 +153,9 @@ function PracticeSelectionPage() {
 
       <div className="absolute bottom-4 right-4 z-20 flex items-center gap-3">
         <button type="button" onClick={() => navigate('/main-menu')} className={BACK_BUTTON}>
-          Back
+          {t('common.back')}
         </button>
-        <Link to="/settings" aria-label="Settings" className={SETTINGS_BUTTON}>
+        <Link to="/settings" aria-label={t('common.settingsAria')} className={SETTINGS_BUTTON}>
           <img src={SETTINGS_ICON} alt="" className="h-7 w-7" />
         </Link>
       </div>

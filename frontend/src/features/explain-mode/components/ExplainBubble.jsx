@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from '../../../shared/components/Button/Button';
+import { useI18n } from '../../../shared/i18n/I18nContext';
 
 // Dropped into any other feature's screen — not a standalone page. Pass a
 // getExplanation() that resolves to a { explanation } response from
 // explainModeApi.js (explainNeighbor or explainMembership).
 function ExplainBubble({ getExplanation }) {
+  const { t } = useI18n();
   const [explanation, setExplanation] = useState(null);
 
   const handleWhy = async () => {
@@ -16,7 +18,7 @@ function ExplainBubble({ getExplanation }) {
   return (
     <div className="flex flex-col items-start gap-2">
       <Button variant="secondary" onClick={handleWhy}>
-        Why?
+        {t('explain.why')}
       </Button>
       <AnimatePresence>
         {explanation && (

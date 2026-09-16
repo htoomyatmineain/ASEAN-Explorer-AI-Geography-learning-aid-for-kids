@@ -1,6 +1,9 @@
+import { useI18n } from '../../../shared/i18n/I18nContext';
+
 // Tappable capital "drop target": kids tap the country first, then one of
 // these. Once the pair is matched correctly the target locks green.
 function CapitalDropTarget({ name, matched, onDrop }) {
+  const { tWord } = useI18n();
   return (
     <button
       type="button"
@@ -21,7 +24,7 @@ function CapitalDropTarget({ name, matched, onDrop }) {
         </span>
       )}
       <span className="text-2xl leading-none" aria-hidden="true">🏛️</span>
-      <span className="text-center text-base leading-tight">{name.replace(/_/g, ' ')}</span>
+      <span className="text-center text-base leading-tight">{tWord(name)}</span>
     </button>
   );
 }

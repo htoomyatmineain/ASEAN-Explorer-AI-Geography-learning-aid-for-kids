@@ -7,6 +7,7 @@ import { checkCapitalMatch } from '../capitalMatchApi';
 import { KIKO } from '../../guess-game/clueOptions';
 import { useGame } from '../../../shared/state/GameContext';
 import { setTopicScore as postTopicScore } from '../../dashboard/dashboardApi';
+import { useI18n } from '../../../shared/i18n/I18nContext';
 
 // One board with all 10 ASEAN countries (Indonesia included) — country atoms
 // and capitals must match backend/prolog/facts.pl.
@@ -29,13 +30,13 @@ function shuffle(items) {
   return [...items].sort(() => Math.random() - 0.5);
 }
 
-function mascotLine(selectedCountry, matchedCount, allMatched, isChecking, feedback) {
-  if (allMatched) return 'All 10 capitals matched — amazing job!';
-  if (isChecking) return 'Let me check the map…';
-  if (feedback && feedback.result === 'incorrect') return "Oops, that's not right — try another one!";
-  if (selectedCountry) return `Now tap the capital of ${selectedCountry.replace(/_/g, ' ')}!`;
-  if (matchedCount > 0) return 'Keep going — tap the next country!';
-  return 'Tap a country, then tap its capital!';
+function mascotLine(t, tWord, selectedCountry, matchedCount, allMatched, isChecking, feedback) {
+  if (allMatched) return t('capital.mascot.allMatched');
+  if (isChecking) return t('capital.mascot.checking');
+  if (feedback && feedback.result === 'incorrect') return t('capital.mascot.incorrect');
+  if (selectedCountry) return t('capital.mascot.selected', { country: tWord(selectedCountry) });
+  if (matchedCount > 0) return t('capital.mascot.keepGoing');
+  return t('capital.mascot.idle');
 }
 
 function mascotPose(selectedCountry, allMatched, isChecking, feedback) {
@@ -46,6 +47,7 @@ function mascotPose(selectedCountry, allMatched, isChecking, feedback) {
 }
 
 function CapitalMatchGame() {
+  const { t, tWord } = useI18n();
   // Capitals reshuffle every new game, so "Play again" gets a fresh layout.
   const [capitals, setCapitals] = useState(() => shuffle(ALL_PAIRS.map(({ capital }) => capital)));
   const [selectedCountry, setSelectedCountry] = useState(null);
@@ -94,7 +96,7 @@ function CapitalMatchGame() {
       postTopicScore('countries_and_capitals', percentage).catch(() => {});
       setSelectedCountry(null);
     } catch {
-      setError('The Capital Match backend is not available right now.');
+      setError(t('capital.backendError'));
     } finally {
       setIsChecking(false);
     }
@@ -137,14 +139,14 @@ function CapitalMatchGame() {
           </AnimatePresence>
         </motion.div>
         <p className="m-0 text-xl font-bold text-[#7c2d12]">
-          {mascotLine(selectedCountry, matchedCount, allMatched, isChecking, feedback)}
+          {mascotLine(t, tWord, selectedCountry, matchedCount, allMatched, isChecking, feedback)}
         </p>
       </div>
 
       {/* Progress: one dot per pair, filled as they get matched. */}
       <div className="flex items-center justify-center gap-3">
         <span className="text-lg font-extrabold text-[#7c2d12]">
-          {matchedCount} of {ALL_PAIRS.length} matched
+          {t('capital.matchedCount', { matched: matchedCount, total: ALL_PAIRS.length })}
         </span>
         <div className="flex gap-1.5">
           {ALL_PAIRS.map(({ country }) => (
@@ -158,7 +160,7 @@ function CapitalMatchGame() {
 
       {/* Step 1: pick a country */}
       <div className="flex flex-col items-center gap-3">
-        <h2 className="m-0 text-2xl font-extrabold text-[#7c2d12]">1. Tap a country</h2>
+        <h2 className="m-0 text-2xl font-extrabold text-[#7c2d12]">{t('capital.step1')}</h2>
         <div className="flex flex-wrap justify-center gap-3">
           {ALL_PAIRS.map(({ country }) => (
             <CountryDragCard
@@ -174,7 +176,7 @@ function CapitalMatchGame() {
 
       {/* Step 2: tap its capital */}
       <div className="flex flex-col items-center gap-3">
-        <h2 className="m-0 text-2xl font-extrabold text-[#7c2d12]">2. Tap its capital</h2>
+        <h2 className="m-0 text-2xl font-extrabold text-[#7c2d12]">{t('capital.step2')}</h2>
         <div className="flex flex-wrap justify-center gap-3">
           {capitals.map((capital) => (
             <CapitalDropTarget
@@ -199,7 +201,7 @@ function CapitalMatchGame() {
             <Confetti burstKey={matchedCount} />
             <div className="text-5xl leading-none">🏆</div>
             <p className="m-0 text-2xl font-extrabold text-[#7c2d12]">
-              All 10 capitals matched — amazing job!
+              {t('capital.mascot.allMatched')}
             </p>
             <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
               <button
@@ -207,7 +209,7 @@ function CapitalMatchGame() {
                 onClick={resetGame}
                 className="min-h-[56px] rounded-full bg-sky-500 px-8 py-[15px] text-lg font-extrabold text-white shadow-[0_6px_0_#0369a1] transition-transform hover:-translate-y-1 active:translate-y-[3px] active:shadow-[0_2px_0_#0369a1]"
               >
-                🎉 Play again
+                {t('capital.playAgain')}
               </button>
             </div>
           </motion.div>
@@ -226,7 +228,7 @@ function CapitalMatchGame() {
           >
             <span className="text-3xl leading-none" aria-hidden="true">🙈</span>
             <p className="m-0 text-lg font-bold capitalize text-red-600">
-              {feedback.capital} is not the capital of {feedback.country.replace(/_/g, ' ')} — try again!
+              {t('capital.wrongFeedback', { capital: tWord(feedback.capital), country: tWord(feedback.country) })}
             </p>
           </motion.div>
         )}
@@ -239,7 +241,7 @@ function CapitalMatchGame() {
           >
             <span className="text-3xl leading-none" aria-hidden="true">✅</span>
             <p className="m-0 text-lg font-bold capitalize text-green-700">
-              Yes — {feedback.capital} is the capital of {feedback.country.replace(/_/g, ' ')}!
+              {t('capital.correctFeedback', { capital: tWord(feedback.capital), country: tWord(feedback.country) })}
             </p>
           </motion.div>
         )}

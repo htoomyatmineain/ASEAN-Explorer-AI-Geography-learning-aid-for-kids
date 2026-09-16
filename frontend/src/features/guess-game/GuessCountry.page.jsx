@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import GuessGame from './components/GuessGame';
+import { useI18n } from '../../shared/i18n/I18nContext';
 
 // Same asset as the entrance page's logo (frontend/src/features/home/Home.page.jsx)
 // — filename has a space, so it stays percent-encoded.
@@ -17,6 +18,7 @@ const BACK_BUTTON =
 // screens. Its URL (/guess) can also be opened directly in a new browser tab.
 function GuessCountryPage() {
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   return (
     <div className="relative min-h-screen">
@@ -33,7 +35,7 @@ function GuessCountryPage() {
           <img src={LOGO_IMAGE} alt="ASEAN Explorer" className="h-14 w-auto drop-shadow-lg" />
         </Link>
         <button type="button" onClick={() => navigate('/practice')} className={BACK_BUTTON}>
-          ← Practice
+          {t('common.backToPractice')}
         </button>
       </header>
 
@@ -58,10 +60,10 @@ function GuessCountryPage() {
             </motion.span>
             <div className="relative">
               <h1 className="m-0 text-4xl font-extrabold leading-tight text-[#7c2d12]">
-                Guess the Country
+                {t('guess.title')}
               </h1>
               <p className="mt-0.5 text-xl font-semibold text-[#a16207]">
-                I'll give you clues — you guess the country!
+                {t('guess.subtitle')}
               </p>
             </div>
           </div>

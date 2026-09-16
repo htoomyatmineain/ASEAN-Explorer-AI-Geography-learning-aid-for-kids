@@ -5,6 +5,7 @@ import { checkNeighbors } from '../neighborGameApi';
 import { KIKO } from '../../guess-game/clueOptions';
 import { useGame } from '../../../shared/state/GameContext';
 import { setTopicScore as postTopicScore } from '../../dashboard/dashboardApi';
+import { useI18n } from '../../../shared/i18n/I18nContext';
 
 // One question per ASEAN country. Candidates are that country's real
 // neighbors plus exactly ONE non-neighbor (the odd one out) — except the
@@ -26,12 +27,12 @@ const ROUNDS = [
 
 const isLastRound = (index) => index === ROUNDS.length - 1;
 
-function mascotLine(status, pick, correct, country) {
-  if (status === 'checking') return 'Let me check the map…';
-  if (status === 'done' && correct) return 'You found it! Great spotting!';
-  if (status === 'done') return 'Good try! The green ones are real neighbors.';
-  if (pick) return 'Locked in — press "Check my answer" when ready!';
-  return `Tap the country you think does NOT touch ${country}!`;
+function mascotLine(t, tWord, status, pick, correct, country) {
+  if (status === 'checking') return t('neighbor.mascot.checking');
+  if (status === 'done' && correct) return t('neighbor.mascot.doneCorrect');
+  if (status === 'done') return t('neighbor.mascot.doneWrong');
+  if (pick) return t('neighbor.mascot.locked');
+  return t('neighbor.mascot.idle', { country: tWord(country) });
 }
 
 function mascotPose(status, pick, correct) {
@@ -42,6 +43,7 @@ function mascotPose(status, pick, correct) {
 }
 
 function NeighborGame() {
+  const { t, tWord } = useI18n();
   const [roundIndex, setRoundIndex] = useState(0);
   const [pick, setPick] = useState(null);
   const [status, setStatus] = useState('idle'); // idle | checking | done
@@ -75,7 +77,7 @@ function NeighborGame() {
       postTopicScore('neighboring_countries', score).catch(() => {});
       setStatus('done');
     } catch {
-      setError('The Neighbor Quiz backend is not available right now.');
+      setError(t('neighbor.backendError'));
       setStatus('idle');
     }
   };
@@ -120,20 +122,19 @@ function NeighborGame() {
             />
           </AnimatePresence>
         </motion.div>
-        <p className="m-0 text-xl font-bold text-[#7c2d12]">{mascotLine(status, pick, correct, round.country)}</p>
+        <p className="m-0 text-xl font-bold text-[#7c2d12]">{mascotLine(t, tWord, status, pick, correct, round.country)}</p>
       </div>
 
       {/* The question */}
       <div className="flex flex-col items-center gap-2 text-center">
         <span className="rounded-full bg-[#fef3c7] px-4 py-1 text-sm font-bold text-[#7c2d12]">
-          Question {roundIndex + 1} of {ROUNDS.length}
+          {t('neighbor.question', { current: roundIndex + 1, total: ROUNDS.length })}
         </span>
         <h2 className="m-0 text-3xl font-extrabold leading-tight text-[#7c2d12]">
-          Which of these does <span className="capitalize text-sky-600">NOT</span> border{' '}
-          <span className="capitalize text-sky-600">{round.country}</span>?
+          {t('neighbor.questionTitle', { country: tWord(round.country) })}
         </h2>
         <p className="m-0 text-lg font-semibold text-[#a16207]">
-          Tap the odd one out, then press the button!
+          {t('neighbor.tapHint')}
         </p>
       </div>
 
@@ -162,7 +163,7 @@ function NeighborGame() {
             {status === 'checking' && (
               <span className="h-[22px] w-[22px] animate-spin rounded-full border-4 border-white/40 border-t-white" />
             )}
-            {status === 'checking' ? 'Checking…' : '🧭 Check my answer'}
+            {status === 'checking' ? t('common.checking') : t('neighbor.checkButton')}
           </button>
         )}
         {status === 'done' && (
@@ -171,7 +172,7 @@ function NeighborGame() {
             onClick={nextQuestion}
             className="min-h-[56px] rounded-full bg-sky-500 px-7 py-[15px] text-lg font-extrabold text-white shadow-[0_6px_0_#0369a1] transition-transform hover:-translate-y-1 active:translate-y-[3px] active:shadow-[0_2px_0_#0369a1]"
           >
-            {isLastRound(roundIndex) ? '🎉 Play all again' : '➡️ Next question'}
+            {isLastRound(roundIndex) ? t('neighbor.playAllAgain') : t('neighbor.nextButton')}
           </button>
         )}
         {status === 'done' && (
@@ -180,7 +181,7 @@ function NeighborGame() {
             onClick={resetRound}
             className="min-h-[56px] rounded-full bg-[#fef3c7] px-7 py-[15px] text-lg font-extrabold text-[#7c2d12] shadow-[0_6px_0_#e7c9a0] transition-transform hover:-translate-y-1 active:translate-y-[3px] active:shadow-[0_2px_0_#e7c9a0]"
           >
-            🔄 Play again
+            {t('neighbor.playAgain')}
           </button>
         )}
       </div>
@@ -197,8 +198,8 @@ function NeighborGame() {
             <div className="text-5xl leading-none">🎉</div>
             <p className="m-0 text-2xl font-extrabold capitalize leading-tight text-green-700">
               {allNonNeighbors
-                ? `You're right — ${pick} doesn't border ${round.country}! In fact, none of these do — it's an island nation!`
-                : `You're right — ${pick} doesn't border ${round.country}!`}
+                ? t('neighbor.correctIsland', { pick: tWord(pick), country: tWord(round.country) })
+                : t('neighbor.correct', { pick: tWord(pick), country: tWord(round.country) })}
             </p>
           </motion.div>
         )}
@@ -211,9 +212,7 @@ function NeighborGame() {
             className="flex flex-col items-center gap-2 rounded-[22px] border-[3px] border-[#fecaca] bg-[#fef2f2] px-5 py-[18px] text-center"
           >
             <p className="m-0 text-lg font-bold text-red-600">
-              Not quite — {pick} does border {round.country}. The{' '}
-              <span className="text-green-600">green ones are its neighbors</span>; the{' '}
-              <span className="text-red-500">red one is the odd one out</span>!
+              {t('neighbor.wrong', { pick: tWord(pick), country: tWord(round.country) })}
             </p>
           </motion.div>
         )}

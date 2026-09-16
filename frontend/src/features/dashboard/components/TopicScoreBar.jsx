@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useI18n } from '../../../shared/i18n/I18nContext';
 
 // Bar color reflects how confident the topic is: green for 80+, sky for
 // 60-79, amber below 60 so the child can see which topic needs practice.
@@ -9,10 +10,11 @@ function barColor(score) {
 }
 
 function TopicScoreBar({ topic, score }) {
+  const { tWord } = useI18n();
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between">
-        <span className="font-bold capitalize text-stone-800">{topic.replace(/_/g, ' ')}</span>
+        <span className="font-bold capitalize text-stone-800">{tWord(topic)}</span>
         <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-sm font-extrabold text-stone-700">
           {score}%
         </span>

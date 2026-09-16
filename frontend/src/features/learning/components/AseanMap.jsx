@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { ComposableMap, Geographies, Geography, Marker, ZoomableGroup } from 'react-simple-maps';
 import { ISO_NUMERIC_TO_COUNTRY } from '../countryCodes';
 import { FLAG_IMAGE_BY_COUNTRY } from '../../guess-game/clueOptions';
+import { useI18n } from '../../../shared/i18n/I18nContext';
 
 // Real world geometry (241 countries) so Learning Mode can open on a full
 // world map before zooming into ASEAN — replaces the old ASEAN-only file,
@@ -96,6 +97,7 @@ const TINY_COUNTRIES = {
 function AseanMap({ selectedCountry, onSelectCountry }) {
   const [hasIntroed, setHasIntroed] = useState(false);
   const [hoveredCountry, setHoveredCountry] = useState(null);
+  const { tWord } = useI18n();
 
   useEffect(() => {
     const timer = setTimeout(() => setHasIntroed(true), 900);
@@ -225,7 +227,7 @@ function AseanMap({ selectedCountry, onSelectCountry }) {
                       hovered, so the map reads clean until you point at one. */}
                   {Object.entries(COUNTRY_LABEL_COORDS).map(([country, coords]) => {
                     if (country !== hoveredCountry) return null;
-                    const label = country.replace(/_/g, ' ');
+                    const label = tWord(country);
                     const hasFlag = Boolean(FLAG_IMAGE_BY_COUNTRY[country]);
                     // Text starts right after the flag (or at the left pad if
                     // there isn't one) instead of being centered against a
