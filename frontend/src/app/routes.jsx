@@ -26,5 +26,5 @@ export const routes = [
   { path: '/neighbors', element: NeighborQuizPage, bare: true },
   { path: '/capitals', element: CapitalMatchPage, bare: true },
   { path: '/dashboard', element: DashboardPage },
-  { path: '/settings', element: SettingsPage },
+  { path: '/settings', element: SettingsPage, bare: true },
 ];

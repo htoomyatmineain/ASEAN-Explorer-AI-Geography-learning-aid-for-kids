@@ -117,7 +117,7 @@ export const UI = {
     'settings.title': 'Settings',
     'settings.language': 'Language',
     'settings.languageEnglish': 'English',
-    'settings.languageMyanmar': 'Myanmar (Burmese)',
+    'settings.languageMyanmar': 'Myanmar',
   },
   my: {
     'common.loading': 'လုပ်ဆောင်နေသည်…',
