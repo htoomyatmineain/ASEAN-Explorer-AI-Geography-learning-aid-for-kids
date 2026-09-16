@@ -138,14 +138,14 @@ function CapitalMatchGame() {
             />
           </AnimatePresence>
         </motion.div>
-        <p className="m-0 text-xl font-bold text-[#7c2d12]">
+        <p className="m-0 font-comic text-xl font-bold text-[#7c2d12]">
           {mascotLine(t, tWord, selectedCountry, matchedCount, allMatched, isChecking, feedback)}
         </p>
       </div>
 
       {/* Progress: one dot per pair, filled as they get matched. */}
       <div className="flex items-center justify-center gap-3">
-        <span className="text-lg font-extrabold text-[#7c2d12]">
+        <span className="font-comic text-lg font-extrabold text-[#7c2d12]">
           {t('capital.matchedCount', { matched: matchedCount, total: ALL_PAIRS.length })}
         </span>
         <div className="flex gap-1.5">
@@ -160,7 +160,7 @@ function CapitalMatchGame() {
 
       {/* Step 1: pick a country */}
       <div className="flex flex-col items-center gap-3">
-        <h2 className="m-0 text-2xl font-extrabold text-[#7c2d12]">{t('capital.step1')}</h2>
+        <h2 className="m-0 font-comic text-2xl font-extrabold text-[#7c2d12]">{t('capital.step1')}</h2>
         <div className="flex flex-wrap justify-center gap-3">
           {ALL_PAIRS.map(({ country }) => (
             <CountryDragCard
@@ -176,7 +176,7 @@ function CapitalMatchGame() {
 
       {/* Step 2: tap its capital */}
       <div className="flex flex-col items-center gap-3">
-        <h2 className="m-0 text-2xl font-extrabold text-[#7c2d12]">{t('capital.step2')}</h2>
+        <h2 className="m-0 font-comic text-2xl font-extrabold text-[#7c2d12]">{t('capital.step2')}</h2>
         <div className="flex flex-wrap justify-center gap-3">
           {capitals.map((capital) => (
             <CapitalDropTarget

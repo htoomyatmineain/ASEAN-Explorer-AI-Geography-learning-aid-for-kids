@@ -265,7 +265,7 @@ function AseanMap({ selectedCountry, onSelectCountry }) {
                             fontSize="12"
                             fontWeight="700"
                             fill="#1c1917"
-                            className="font-momo"
+                            className="font-comic"
                           >
                             {label}
                           </text>

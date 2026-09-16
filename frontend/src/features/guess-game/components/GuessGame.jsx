@@ -125,7 +125,7 @@ function GuessGame() {
             />
           </AnimatePresence>
         </motion.div>
-        <p className="m-0 text-xl font-bold text-[#7c2d12]">{mascotLine(t, guess, result, isChecking)}</p>
+        <p className="m-0 font-comic text-xl font-bold text-[#7c2d12]">{mascotLine(t, guess, result, isChecking)}</p>
       </div>
 
       {/* Step 1: the clues (read-only) */}
@@ -134,8 +134,8 @@ function GuessGame() {
           <span className="flex h-[38px] w-[38px] flex-none items-center justify-center rounded-full bg-sky-500 text-lg font-extrabold text-white">
             1
           </span>
-          <h2 className="m-0 text-2xl font-extrabold text-[#7c2d12]">{t('guess.step1Title')}</h2>
-          <span className="rounded-full bg-[#fef3c7] px-4 py-1 text-sm font-bold text-[#7c2d12]">
+          <h2 className="m-0 font-comic text-2xl font-extrabold text-[#7c2d12]">{t('guess.step1Title')}</h2>
+          <span className="rounded-full bg-[#fef3c7] px-4 py-1 font-comic text-sm font-bold text-[#7c2d12]">
             {t('guess.round', { current: roundIndex + 1, total: CHALLENGE_ROUNDS.length })}
           </span>
         </div>
@@ -152,7 +152,7 @@ function GuessGame() {
           <span className="flex h-[38px] w-[38px] flex-none items-center justify-center rounded-full bg-sky-500 text-lg font-extrabold text-white">
             2
           </span>
-          <h2 className="m-0 text-2xl font-extrabold text-[#7c2d12]">{t('guess.step2Title')}</h2>
+          <h2 className="m-0 font-comic text-2xl font-extrabold text-[#7c2d12]">{t('guess.step2Title')}</h2>
         </div>
         {/* The full pickable list in words, so every country (Indonesia included)
             is spelled out right under the question. */}
@@ -222,7 +222,7 @@ function GuessGame() {
                   </motion.span>
                 )}
                 <img src={FLAG_IMAGE_BY_COUNTRY[country]} alt="" className="h-10 w-14 rounded object-cover" />
-                <span className="text-center text-base leading-tight">{tWord(country)}</span>
+                <span className="text-center font-comic text-base leading-tight">{tWord(country)}</span>
               </button>
             );
           })}

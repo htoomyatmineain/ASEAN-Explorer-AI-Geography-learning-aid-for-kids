@@ -44,10 +44,10 @@ function ClueCard({ clue, index, onRemove }) {
           icon
         )}
       </span>
-      <span className="text-xs font-bold uppercase tracking-wide text-[#92400e]">
+      <span className="font-comic text-xs font-bold uppercase tracking-wide text-[#92400e]">
         {typeLabel}
       </span>
-      <span className="text-center text-lg font-extrabold capitalize text-stone-900">
+      <span className="text-center font-comic text-lg font-extrabold capitalize text-stone-900">
         {tWord(clue.value)}
       </span>
       {onRemove && (

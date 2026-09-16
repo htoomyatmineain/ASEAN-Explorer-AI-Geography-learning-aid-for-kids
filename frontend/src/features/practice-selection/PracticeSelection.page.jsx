@@ -1,50 +1,35 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { KIKO, FLAG_IMAGE_BY_COUNTRY } from '../guess-game/clueOptions';
 import { useI18n } from '../../shared/i18n/I18nContext';
 
 const LOGO_IMAGE = '/assets/logo/ASEAN%20explorer.png';
-const SETTINGS_ICON = '/assets/icons/nav-03.png';
+// Same background photo + dark scrim as the main menu (Layout.jsx) instead
+// of this page's own gradient, for a consistent look across menu pages.
+const BACKGROUND_IMAGE = '/assets/background/learning.png';
 
+// Each illustrated card already has its own title art baked in, so the
+// card just frames that image — no separate icon/emoji/text layer needed.
+// `label` still feeds the image's alt text, so it stays translated.
 const GAME_MODE_DEFS = [
-  {
-    to: '/journey',
-    labelKey: 'modes.journey',
-    emoji: '🗺️',
-    className: 'border-sky-600 bg-sky-400 shadow-[0_6px_0_0_rgb(2,132,199)]',
-  },
   {
     to: '/guess',
     labelKey: 'modes.guess',
-    image: KIKO.hello,
-    imageAlt: 'Kiko the parrot mascot waving hello',
-    className: 'border-lime-600 bg-lime-400 shadow-[0_6px_0_0_rgb(101,163,13)]',
+    cardImage: '/assets/background/practice-card-1.png',
+    className: 'border-lime-600 shadow-[0_6px_0_0_rgb(101,163,13)]',
   },
   {
     to: '/neighbors',
     labelKey: 'modes.neighbors',
-    emoji: '🧭',
-    className: 'border-amber-600 bg-amber-400 shadow-[0_6px_0_0_rgb(217,119,6)]',
+    cardImage: '/assets/background/practice-card-2.png',
+    className: 'border-amber-600 shadow-[0_6px_0_0_rgb(217,119,6)]',
   },
   {
     to: '/capitals',
     labelKey: 'modes.capitals',
-    flagPreview: 'thailand',
-    className: 'border-rose-700 bg-rose-500 shadow-[0_6px_0_0_rgb(190,18,60)]',
+    cardImage: '/assets/background/practice-card-3.png',
+    className: 'border-rose-700 shadow-[0_6px_0_0_rgb(190,18,60)]',
   },
-];
-
-// Floating pencils/books drifting behind the cards — purely decorative, kept
-// out of the tab order and out of hit-testing.
-const FLOATING_ICONS = [
-  { emoji: '📖', top: '8%', left: '6%', size: '3.5rem', duration: '9s', delay: '0s', driftX: '30px', rotate: '10deg' },
-  { emoji: '✏️', top: '18%', left: '85%', size: '3rem', duration: '7s', delay: '0.5s', driftX: '-24px', rotate: '-14deg' },
-  { emoji: '📚', top: '70%', left: '10%', size: '4rem', duration: '10s', delay: '1s', driftX: '20px', rotate: '8deg' },
-  { emoji: '📝', top: '78%', left: '80%', size: '3rem', duration: '8s', delay: '0.3s', driftX: '-18px', rotate: '-10deg' },
-  { emoji: '🖍️', top: '40%', left: '92%', size: '3rem', duration: '11s', delay: '1.4s', driftX: '-22px', rotate: '16deg' },
-  { emoji: '🔖', top: '50%', left: '3%', size: '3rem', duration: '9s', delay: '0.8s', driftX: '26px', rotate: '-8deg' },
-  { emoji: '📏', top: '10%', left: '45%', size: '2.5rem', duration: '8s', delay: '1.1s', driftX: '18px', rotate: '12deg' },
 ];
 
 const NAV_ARROW =
@@ -52,9 +37,6 @@ const NAV_ARROW =
 
 const BACK_BUTTON =
   'flex shrink-0 items-center justify-center gap-2 rounded-xl border-b-4 border-rose-700 bg-rose-500 px-6 py-3.5 text-xl font-extrabold uppercase tracking-wide text-white [text-shadow:_0_2px_4px_rgb(0_0_0_/_60%)] shadow-[0_3px_0_0_rgb(190,18,60)] transition-transform duration-100 ease-out active:translate-y-[3px] active:border-b-0 active:shadow-none';
-
-const SETTINGS_BUTTON =
-  'flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-xl border-b-4 border-lime-600 bg-lime-400 shadow-[0_3px_0_0_rgb(101,163,13)] transition-transform duration-100 ease-out active:translate-y-[3px] active:border-b-0 active:shadow-none';
 
 // Dedicated page (route is `bare`) — own header, own background, no shared
 // nav. One big card at a time instead of a small scrolling strip.
@@ -71,25 +53,12 @@ function PracticeSelectionPage() {
   const mode = GAME_MODES[index];
 
   return (
-    <div className="relative flex h-screen flex-col overflow-hidden bg-gradient-to-b from-amber-200 via-yellow-300 to-amber-300">
-      {FLOATING_ICONS.map((icon, i) => (
-        <span
-          key={i}
-          aria-hidden="true"
-          className="floating-icon pointer-events-none absolute select-none opacity-40"
-          style={{
-            top: icon.top,
-            left: icon.left,
-            fontSize: icon.size,
-            animationDuration: icon.duration,
-            animationDelay: icon.delay,
-            '--drift-x': icon.driftX,
-            '--drift-rotate': icon.rotate,
-          }}
-        >
-          {icon.emoji}
-        </span>
-      ))}
+    <div className="relative flex h-screen flex-col overflow-hidden">
+      <div
+        className="absolute inset-0 -z-10 bg-cover bg-no-repeat"
+        style={{ backgroundImage: `url('${BACKGROUND_IMAGE}')`, backgroundPosition: 'center bottom' }}
+      />
+      <div className="absolute inset-0 -z-10 bg-black/50" />
 
       <header className="relative z-20 flex shrink-0 items-center px-6 py-4">
         <Link to="/main-menu">
@@ -97,11 +66,7 @@ function PracticeSelectionPage() {
         </Link>
       </header>
 
-      <main className="relative z-10 flex flex-1 flex-col items-center justify-center gap-8 px-6 pb-8">
-        <h1 className="font-display text-center text-4xl uppercase tracking-wide text-amber-900 [text-shadow:_0_2px_0_rgb(255_255_255_/_50%)] sm:text-6xl">
-          {t('practice.title')}
-        </h1>
-
+      <main className="relative z-10 flex flex-1 flex-col items-center justify-center gap-8 px-6 pb-8 pt-2">
         <div className="flex w-full max-w-5xl items-center justify-center gap-4 sm:gap-8">
           <button type="button" onClick={() => goTo(-1)} aria-label={t('practice.prevAria')} className={NAV_ARROW}>
             ‹
@@ -119,27 +84,9 @@ function PracticeSelectionPage() {
               >
                 <Link
                   to={mode.to}
-                  className={`flex h-full w-full flex-col items-center justify-center gap-8 rounded-[2.5rem] border-b-[10px] text-center text-white transition-transform duration-100 ease-out active:translate-y-2 active:border-b-0 active:shadow-none ${mode.className}`}
+                  className={`block h-full w-full overflow-hidden rounded-[2.5rem] border-b-[10px] transition-transform duration-100 ease-out active:translate-y-2 active:border-b-0 active:shadow-none ${mode.className}`}
                 >
-                  {mode.image ? (
-                    <img src={mode.image} alt={mode.imageAlt ?? ''} className="h-40 w-40 object-contain drop-shadow-lg" />
-                  ) : mode.flagPreview ? (
-                    <span className="relative flex h-40 w-40 items-center justify-center">
-                      <img
-                        src={FLAG_IMAGE_BY_COUNTRY[mode.flagPreview]}
-                        alt=""
-                        className="h-28 w-40 rounded-xl object-cover shadow-lg"
-                      />
-                      <span className="absolute -bottom-3 -right-3 flex h-14 w-14 items-center justify-center rounded-full bg-white text-3xl shadow">
-                        🏛️
-                      </span>
-                    </span>
-                  ) : (
-                    <span className="text-9xl">{mode.emoji}</span>
-                  )}
-                  <span className="font-display text-3xl uppercase tracking-wide [text-shadow:_0_2px_4px_rgb(0_0_0_/_60%)] sm:text-4xl">
-                    {mode.label}
-                  </span>
+                  <img src={mode.cardImage} alt={mode.label} className="h-full w-full object-cover" />
                 </Link>
               </motion.div>
             </AnimatePresence>
@@ -149,15 +96,20 @@ function PracticeSelectionPage() {
             ›
           </button>
         </div>
+
+        <motion.h1
+          animate={{ opacity: [1, 0.25, 1] }}
+          transition={{ repeat: Infinity, duration: 1.4, ease: 'easeInOut' }}
+          className="font-comic text-center text-sm uppercase tracking-wide text-white [text-shadow:_0_2px_4px_rgb(0_0_0_/_60%)] sm:text-lg"
+        >
+          {t('practice.title')}
+        </motion.h1>
       </main>
 
       <div className="absolute bottom-4 right-4 z-20 flex items-center gap-3">
         <button type="button" onClick={() => navigate('/main-menu')} className={BACK_BUTTON}>
           {t('common.back')}
         </button>
-        <Link to="/settings" aria-label={t('common.settingsAria')} className={SETTINGS_BUTTON}>
-          <img src={SETTINGS_ICON} alt="" className="h-7 w-7" />
-        </Link>
       </div>
     </div>
   );

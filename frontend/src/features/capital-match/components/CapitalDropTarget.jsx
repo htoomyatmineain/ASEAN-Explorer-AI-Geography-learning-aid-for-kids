@@ -24,7 +24,7 @@ function CapitalDropTarget({ name, matched, onDrop }) {
         </span>
       )}
       <span className="text-2xl leading-none" aria-hidden="true">🏛️</span>
-      <span className="text-center text-base leading-tight">{tWord(name)}</span>
+      <span className="text-center font-comic text-base leading-tight">{tWord(name)}</span>
     </button>
   );
 }
