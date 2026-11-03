@@ -11,3 +11,46 @@ body {
   font-family: 'Cherry Bomb One', 'Comic Sans MS', system-ui, sans-serif;
   color: #ffffff;
 }
+
+/* react-simple-maps applies pan/zoom as an instant SVG transform attribute —
+   this lets the browser animate it like any other CSS transform change, which
+   is what makes AseanMap's world -> ASEAN intro and per-country zoom smooth. */
+.rsm-zoomable-group {
+  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Slow drifting icons for the Practice Mode background (see
+   frontend/src/features/practice-selection/PracticeSelection.page.jsx). Each
+   icon sets --drift-x/--drift-rotate inline so they don't all move in lockstep. */
+@keyframes float-drift {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(var(--drift-x, 24px), -36px) rotate(var(--drift-rotate, 12deg)); }
+}
+.floating-icon {
+  animation-name: float-drift;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+/* Boats/ships stay near the water line instead of bobbing 36px up into the
+   sky like clouds and planes — just a gentle rock and a horizontal sail. */
+@keyframes boat-drift {
+  0%, 100% { transform: translate(0, 0) rotate(var(--drift-rotate-start, -3deg)); }
+  50% { transform: translate(var(--drift-x, 24px), -6px) rotate(var(--drift-rotate, 3deg)); }
+}
+.floating-icon-boat {
+  animation-name: boat-drift;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+/* Keeps a scrollable element's own scroll behavior while hiding the
+   scrollbar chrome — used where a scrollbar would clutter an otherwise
+   clean card (e.g. the Learning mode country detail card). */
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

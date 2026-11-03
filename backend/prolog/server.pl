@@ -4,6 +4,11 @@
 :- use_module(library(http/http_cors)).
 :- use_module(library(http/http_parameters)). % needed by features/explain_mode/routes.pl
 
+% Windows' default new-stream encoding follows the system locale (not UTF-8),
+% which matters for reading source files with non-ASCII literals (facts.pl
+% also declares :- encoding(utf8) itself, since that's per-file).
+:- set_prolog_flag(encoding, utf8).
+
 :- set_setting(http:cors, [*]). % Allow CORS from any origin for development
 
 :- [kb].
@@ -13,6 +18,10 @@
 % routes.pl — server.pl just loads them (docs/02 §2.2), so adding a feature
 % means adding one line here, not editing someone else's routes.
 :- http_handler(root(country/Name), handle_country(Name), []).
+% /neighbors/:name is the same kind of thin wrapper, around core.pl's
+% neighbors_of/2 (bordering countries — not filtered to ASEAN members, so a
+% country like Myanmar also lists China/India/Bangladesh).
+:- http_handler(root(neighbors/Name), handle_neighbors(Name), []).
 :- [features/guess_game/routes].
 :- [features/neighbor_game/routes].
 :- [features/capital_match/routes].
@@ -27,12 +36,59 @@ server(Port) :-
 start_server :-
     server(4000).
 
+% json_unicode_escape(+Atom, -Escaped) renders Atom as a pure-ASCII JSON
+% \uXXXX-escaped string body (no surrounding quotes), splitting characters
+% above U+FFFF into a UTF-16 surrogate pair per the JSON spec.
+%
+% flag_emoji/2 values (e.g. '🇻🇳') go through this instead of straight to
+% reply_json_dict: this SWI-Prolog Windows build corrupts astral (>U+FFFF)
+% characters written through thread_httpd's per-connection socket stream —
+% neither set_prolog_flag(encoding, utf8) nor a per-handler
+% set_stream(current_output, encoding(utf8)) fixes it (verified: both still
+% produced mangled bytes). \uXXXX escapes are plain ASCII, so they pass
+% through untouched regardless of that bug, and every JSON parser
+% (including the frontend's) decodes them back to the correct character.
+json_unicode_escape(Atom, Escaped) :-
+    atom_codes(Atom, Codes),
+    foldl(json_escape_code_, Codes, '', Escaped).
+
+json_escape_code_(Code, In, Out) :-
+    ( Code =< 0xFFFF ->
+        format(atom(A), '\\u~`0t~16r~4|', [Code])
+    ;   Code0 is Code - 0x10000,
+        Hi is 0xD800 + (Code0 >> 10),
+        Lo is 0xDC00 + (Code0 /\ 0x3FF),
+        format(atom(A), '\\u~`0t~16r~4|\\u~`0t~16r~4|', [Hi, Lo])
+    ),
+    atom_concat(In, A, Out).
+
+% json_quote_atom(+Atom, -Quoted) wraps a plain ASCII atom (no embedded
+% quotes/backslashes expected — these are all internal snake_case
+% identifiers from facts.pl) in JSON string quotes.
+json_quote_atom(Atom, Quoted) :-
+    format(atom(Quoted), '"~w"', [Atom]).
+
 % /country/:name - Implemented
 handle_country(NameAtom, _Request) :-
     cors_enable,
-    ( country_info(NameAtom, card(NameAtom, Capital, Currency, Flag, Region, IsMember, Facts)) ->
-        reply_json_dict(_{ country: NameAtom, capital: Capital, currency: Currency,
-                            flag: Flag, region: Region, asean_member: IsMember,
-                            famous_for: Facts })
+    ( country_info(NameAtom, card(NameAtom, Capital, Currency, Flag, Region, IsMember, MemberSince, Facts, Animals, Foods)) ->
+        json_unicode_escape(Flag, FlagEscaped),
+        maplist(json_quote_atom, Facts, QuotedFacts),
+        atomic_list_concat(QuotedFacts, ',', FactsJoined),
+        maplist(json_quote_atom, Animals, QuotedAnimals),
+        atomic_list_concat(QuotedAnimals, ',', AnimalsJoined),
+        maplist(json_quote_atom, Foods, QuotedFoods),
+        atomic_list_concat(QuotedFoods, ',', FoodsJoined),
+        format('Content-type: application/json~n~n'),
+        format(
+            '{"country":"~w","capital":"~w","currency":"~w","flag":"~w","region":"~w","asean_member":"~w","member_since":~w,"famous_for":[~w],"animals":[~w],"foods":[~w]}',
+            [NameAtom, Capital, Currency, FlagEscaped, Region, IsMember, MemberSince, FactsJoined, AnimalsJoined, FoodsJoined]
+        )
     ; reply_json_dict(_{ error: "Country not found" }, [status(404)])
     ).
+
+% /neighbors/:name - Implemented
+handle_neighbors(NameAtom, _Request) :-
+    cors_enable,
+    neighbors_of(NameAtom, Neighbors),
+    reply_json_dict(_{ country: NameAtom, neighbors: Neighbors }).

@@ -1,23 +1,22 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useI18n } from '../../../shared/i18n/I18nContext';
 
 // Same asset as the entrance page's logo (frontend/src/features/home/Home.page.jsx)
 // — filename has a space, so it stays percent-encoded.
 const LOGO_IMAGE = '/assets/logo/ASEAN%20explorer.png';
 const BACKGROUND_IMAGE = '/assets/background/learning.png';
+const SETTINGS_ICON = '/assets/icons/settings.png';
 
-const NAV_ITEMS = [
-  { to: '/explore', label: 'Learning' },
-  { to: '/practice', label: 'Practice' },
-  { to: '/dashboard', label: 'Progress' },
+const NAV_ITEM_DEFS = [
+  { to: '/explore', key: 'nav.learning' },
+  { to: '/practice', key: 'nav.practice' },
 ];
 
-const SETTINGS_ICON = '/assets/icons/nav-03.png';
-
 const NAV_BUTTON =
-  'flex items-center justify-center gap-3 rounded-2xl border-b-[5px] border-sky-600 bg-sky-400 px-6 py-4 text-white shadow-[0_4px_0_0_rgb(2,132,199)] transition-transform duration-100 ease-out active:translate-y-[5px] active:border-b-0 active:shadow-none';
+  'flex items-center justify-center gap-3 rounded-2xl border-b-[6px] border-sky-600 bg-sky-400 px-8 py-5 text-white shadow-[0_5px_0_0_rgb(2,132,199)] transition-transform duration-100 ease-out active:translate-y-[6px] active:border-b-0 active:shadow-none';
 
 const EXIT_BUTTON =
-  'flex items-center justify-center gap-3 rounded-2xl border-b-[5px] border-rose-700 bg-rose-500 px-6 py-4 text-white [text-shadow:_0_2px_4px_rgb(0_0_0_/_60%)] shadow-[0_4px_0_0_rgb(190,18,60)] transition-transform duration-100 ease-out active:translate-y-[5px] active:border-b-0 active:shadow-none';
+  'flex items-center justify-center gap-3 rounded-2xl border-b-[6px] border-rose-700 bg-rose-500 px-8 py-5 text-white [text-shadow:_0_2px_4px_rgb(0_0_0_/_60%)] shadow-[0_5px_0_0_rgb(190,18,60)] transition-transform duration-100 ease-out active:translate-y-[6px] active:border-b-0 active:shadow-none';
 
 const NAV_BUTTON_COMPACT =
   'flex items-center justify-center gap-2 rounded-xl border-b-4 border-sky-600 bg-sky-400 px-4 py-2 text-white shadow-[0_3px_0_0_rgb(2,132,199)] transition-transform duration-100 ease-out active:translate-y-[3px] active:border-b-0 active:shadow-none';
@@ -28,7 +27,9 @@ const EXIT_BUTTON_COMPACT =
 function Layout({ children }) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { t } = useI18n();
   const isMainMenu = pathname === '/main-menu';
+  const NAV_ITEMS = NAV_ITEM_DEFS.map((item) => ({ ...item, label: t(item.key) }));
 
   return (
     <div className="relative min-h-screen">
@@ -45,18 +46,18 @@ function Layout({ children }) {
 
       {isMainMenu ? (
         // The main menu IS the nav — give it the full hero treatment.
-        <div className="flex min-h-[70vh] flex-col items-center justify-center gap-6 px-6 py-10">
+        <div className="flex min-h-screen flex-col items-center justify-center gap-6 px-6 py-10">
           <Link to="/">
-            <img src={LOGO_IMAGE} alt="ASEAN Explorer" className="h-[9rem] w-auto drop-shadow-lg" />
+            <img src={LOGO_IMAGE} alt="ASEAN Explorer" className="h-[12rem] w-auto drop-shadow-lg" />
           </Link>
-          <nav className="flex w-full max-w-sm flex-col gap-4 text-3xl font-extrabold uppercase tracking-wide [text-shadow:_0_2px_4px_rgb(0_0_0_/_60%)]">
+          <nav className="flex w-full max-w-md flex-col gap-5 text-4xl font-extrabold uppercase tracking-wide [text-shadow:_0_2px_4px_rgb(0_0_0_/_60%)]">
             {NAV_ITEMS.map((item) => (
               <Link key={item.to} to={item.to} className={NAV_BUTTON}>
                 <span>{item.label}</span>
               </Link>
             ))}
             <button type="button" onClick={() => navigate('/')} className={EXIT_BUTTON}>
-              Exit
+              {t('nav.exit')}
             </button>
           </nav>
         </div>
@@ -74,7 +75,7 @@ function Layout({ children }) {
               </Link>
             ))}
             <button type="button" onClick={() => navigate('/')} className={EXIT_BUTTON_COMPACT}>
-              Exit
+              {t('nav.exit')}
             </button>
           </nav>
         </header>
@@ -84,7 +85,7 @@ function Layout({ children }) {
 
       <Link
         to="/settings"
-        aria-label="Settings"
+        aria-label={t('common.settingsAria')}
         className="fixed bottom-6 right-6 flex h-16 w-16 items-center justify-center rounded-2xl border-b-[5px] border-lime-600 bg-lime-400 shadow-[0_4px_0_0_rgb(101,163,13)] transition-transform duration-100 ease-out active:translate-y-[5px] active:border-b-0 active:shadow-none"
       >
         <img src={SETTINGS_ICON} alt="" className="h-9 w-9" />
