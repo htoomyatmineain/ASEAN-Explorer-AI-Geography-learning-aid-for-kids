@@ -149,13 +149,24 @@ function CountryDetailPanel({ countryName, onClose }) {
   const { t, tWord } = useI18n();
   const [card, setCard] = useState(null);
   const [flipped, setFlipped] = useState(false);
+  const [error, setError] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
+    const controller = new AbortController();
+    let active = true;
+    const timeout = setTimeout(() => controller.abort(), 10000);
     setCard(null);
+    setError(false);
     setFlipped(false);
-    if (!countryName) return;
-    getCountryInfo(countryName).then(setCard);
-  }, [countryName]);
+    if (countryName) {
+      getCountryInfo(countryName, { signal: controller.signal })
+        .then((data) => { if (active) setCard(data); })
+        .catch(() => { if (active) setError(true); })
+        .finally(() => clearTimeout(timeout));
+    }
+    return () => { active = false; clearTimeout(timeout); controller.abort(); };
+  }, [countryName, attempt]);
 
   if (!countryName) return null;
 
@@ -167,7 +178,7 @@ function CountryDetailPanel({ countryName, onClose }) {
         animate={{ x: 0, opacity: 1 }}
         exit={{ x: -40, opacity: 0 }}
         transition={{ type: 'spring', stiffness: 260, damping: 26 }}
-        className="relative w-full max-h-[calc(100vh-9.5rem)] overflow-y-auto scrollbar-hide rounded-[2rem] bg-white shadow-2xl"
+        className="relative w-full max-h-[inherit] overflow-y-auto scrollbar-hide rounded-[2rem] bg-white shadow-2xl"
       >
         <button
           type="button"
@@ -178,7 +189,12 @@ function CountryDetailPanel({ countryName, onClose }) {
           ×
         </button>
 
-        {!card ? (
+        {error ? (
+          <div role="alert" className="flex min-h-48 flex-col items-center justify-center gap-4 p-8 text-center text-sky-950">
+            <p className="font-comic">{t('learning.loadError')}</p>
+            <button type="button" onClick={() => setAttempt((value) => value + 1)} className="min-h-11 rounded-xl bg-sky-100 px-5 py-3 font-comic font-bold">{t('learning.retry')}</button>
+          </div>
+        ) : !card ? (
           <div className="flex h-40 items-center justify-center">
             <span className="font-comic text-lg text-slate-400">{t('common.loading')}</span>
           </div>

@@ -27,6 +27,9 @@ export const UI = {
     'modes.neighbors': 'Neighbor Quiz',
     'modes.capitals': 'Capital Match',
 
+    'learning.chooseCountry': 'Choose a country',
+    'learning.loadError': 'We couldn’t load this country. Please try again.',
+    'learning.retry': 'Try again',
     'learning.hint': 'Tap a country to learn about it!',
 
     'detail.aseanMember': 'ASEAN Member',
@@ -139,6 +142,9 @@ export const UI = {
     'modes.neighbors': 'အိမ်နီးချင်းစစ်ဆေးမှု',
     'modes.capitals': 'မြို့တော်တွဲစဉ်း',
 
+    'learning.chooseCountry': 'နိုင်ငံတစ်နိုင်ငံ ရွေးပါ',
+    'learning.loadError': 'နိုင်ငံအချက်အလက် မရရှိပါ။ ထပ်မံကြိုးစားပါ။',
+    'learning.retry': 'ထပ်ကြိုးစားမည်',
     'learning.hint': 'နိုင်ငံတစ်ခုကို နှိပ်ပြီး လေ့လာကြည့်ပါ!',
 
     'detail.aseanMember': 'အာဆီယံအဖွဲ့ဝင်',
