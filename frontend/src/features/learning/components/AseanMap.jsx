@@ -236,7 +236,7 @@ function AseanMap({ selectedCountry, onSelectCountry }) {
                   {/* Pass 4: country name pill — only while that country is
                       hovered, so the map reads clean until you point at one. */}
                   {Object.entries(COUNTRY_LABEL_COORDS).map(([country, coords]) => {
-                    if (country !== hoveredCountry && country !== selectedCountry && country !== 'singapore' && country !== 'brunei') return null;
+                    if (country !== hoveredCountry && country !== selectedCountry) return null;
                     const label = tWord(country);
                     const hasFlag = Boolean(FLAG_IMAGE_BY_COUNTRY[country]);
                     // Text starts right after the flag (or at the left pad if

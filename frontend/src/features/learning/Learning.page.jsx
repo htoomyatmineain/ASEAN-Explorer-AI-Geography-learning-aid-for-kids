@@ -53,24 +53,26 @@ function LearningPage() {
         </div>
       )}
 
-      <nav aria-label={t('learning.chooseCountry')} className="explore-picker absolute z-20 flex gap-2 overflow-x-auto rounded-2xl border border-white/80 bg-white/90 p-2 shadow-lg">
+      <div className="absolute bottom-4 right-4 z-20 flex max-w-[calc(100%-2rem)] items-center gap-3">
+      <nav aria-label={t('learning.chooseCountry')} className="explore-picker flex min-w-0 gap-2 overflow-x-auto rounded-2xl border-2 border-b-[5px] border-sky-400 bg-white/90 p-2 shadow-[0_3px_0_0_rgb(14,165,233)]">
         {ASEAN_COUNTRIES.map((country) => (
           <button key={country} type="button" aria-pressed={selectedCountry === country}
             onClick={() => setSelectedCountry(country)}
-            className={"flex min-h-11 shrink-0 items-center gap-2 rounded-xl border-2 px-3 py-2 font-comic text-sm capitalize text-sky-950 focus-visible:outline focus-visible:outline-4 focus-visible:outline-sky-700 " + (selectedCountry === country ? 'border-amber-500 bg-amber-100' : 'border-transparent bg-white hover:bg-sky-100')}>
+            className={"flex min-h-11 shrink-0 items-center gap-2 rounded-xl border-2 border-b-4 px-3 py-2 font-comic text-sm capitalize text-sky-950 focus-visible:outline focus-visible:outline-4 focus-visible:outline-sky-700 " + (selectedCountry === country ? 'border-amber-500 bg-amber-100' : 'border-sky-100 border-b-sky-300 bg-white hover:bg-sky-100')}>
             <img src={FLAG_IMAGE_BY_COUNTRY[country]} alt="" className="h-4 w-6 rounded-sm object-cover" />
             {tWord(country)}
           </button>
         ))}
       </nav>
       {/* Bottom nav bar. */}
-      <div className="absolute bottom-4 right-4 z-20 flex items-center gap-3">
+      <div className="flex shrink-0 items-center gap-3">
         <button type="button" onClick={() => navigate('/main-menu')} className={BACK_BUTTON}>
           {t('common.back')}
         </button>
         <Link to="/settings" aria-label={t('common.settingsAria')} className={SETTINGS_BUTTON}>
           <img src={SETTINGS_ICON} alt="" className="h-7 w-7" />
         </Link>
+      </div>
       </div>
     </div>
   );

@@ -55,16 +55,17 @@ body {
   display: none;
 }
 
-.explore-map { position: absolute; inset: 5rem 0 9rem; }
-.explore-picker { left: 1rem; right: 1rem; bottom: 5.75rem; }
+/* The map stays behind every overlay, including the country picker and card. */
+.explore-map { position: absolute; inset: 0; }
+.explore-picker { width: max-content; }
 .explore-detail { left: 1rem; right: 1rem; bottom: 10rem; max-height: 42dvh; }
 .explore-detail > div { max-height: inherit; }
-.has-selection .explore-map { bottom: calc(42dvh + 10rem); }
+
 .map-country:focus-visible { stroke: #0c4a6e !important; stroke-width: 1.2 !important; }
 @media (min-width: 768px) {
-  .explore-map { inset: 5rem 1rem 10rem; }
+
   .explore-detail { top: 6rem; bottom: auto; left: 1.5rem; right: auto; width: clamp(280px, 30vw, 400px); max-height: calc(100dvh - 17rem); }
-  .has-selection .explore-map { left: calc(clamp(280px, 30vw, 400px) + 2.5rem); bottom: 10rem; }
+
 }
 @media (prefers-reduced-motion: reduce) {
   .explore-page *, .explore-page .rsm-zoomable-group { animation: none !important; transition: none !important; }
