@@ -1,7 +1,7 @@
 import { apiFetch } from '../../shared/api/httpClient';
 
-export function getCountryInfo(countryName) {
-  return apiFetch(`/country/${countryName}`);
+export function getCountryInfo(countryName, options) {
+  return apiFetch(`/country/${countryName}`, options);
 }
 
 export function getNeighbors(countryName) {

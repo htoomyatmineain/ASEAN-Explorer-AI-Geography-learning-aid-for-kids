@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { ASEAN_COUNTRIES } from './countryCodes';
+import { FLAG_IMAGE_BY_COUNTRY } from '../guess-game/clueOptions';
 import AseanMap from './components/AseanMap';
 import CountryDetailPanel from './components/CountryDetailPanel';
 import { useI18n } from '../../shared/i18n/I18nContext';
@@ -21,22 +23,40 @@ const SETTINGS_BUTTON =
 function LearningPage() {
   const [selectedCountry, setSelectedCountry] = useState(null);
   const navigate = useNavigate();
-  const { t } = useI18n();
+  const { t, tWord } = useI18n();
 
   return (
-    <div className="relative h-screen w-full overflow-hidden">
-      <AseanMap selectedCountry={selectedCountry} onSelectCountry={setSelectedCountry} />
+    <div className={"explore-page relative h-[100dvh] w-full overflow-hidden " + (selectedCountry ? "has-selection" : "")}>
+      <div className="explore-map"><AseanMap selectedCountry={selectedCountry} onSelectCountry={setSelectedCountry} /></div>
 
       <Link to="/main-menu" className="absolute left-6 top-4 z-20">
         <img src={LOGO_IMAGE} alt="ASEAN Explorer" className="h-16 w-auto drop-shadow" />
       </Link>
 
-      {/* Hint text, top-right corner. */}
-      <div className="pointer-events-none absolute right-6 top-6 z-20">
-        <span className="inline-flex items-center gap-2 rounded-2xl border-2 border-b-[5px] border-sky-400 bg-white/90 px-4 py-2.5 font-comic text-base font-bold text-sky-800 shadow-[0_3px_0_0_rgb(14,165,233)]">
+      {/* Hint text and country flag picker, top-right corner. */}
+      <div className="pointer-events-none absolute right-6 top-6 z-20 flex flex-col items-end gap-3">
+        <span className="hidden items-center gap-2 rounded-2xl border-2 border-b-[5px] border-sky-400 bg-white/90 px-4 py-2.5 font-comic text-base font-bold text-sky-800 shadow-[0_3px_0_0_rgb(14,165,233)] md:inline-flex">
           <span aria-hidden="true" className="inline-block animate-bounce">👆</span>
           {t('learning.hint')}
         </span>
+
+        <nav
+          aria-label={t('learning.chooseCountry')}
+          className="pointer-events-auto grid grid-cols-2 gap-1.5 rounded-2xl border-2 border-b-[5px] border-sky-400 bg-white/90 p-2 shadow-[0_3px_0_0_rgb(14,165,233)]"
+        >
+          {ASEAN_COUNTRIES.map((country) => (
+            <button
+              key={country}
+              type="button"
+              aria-pressed={selectedCountry === country}
+              onClick={() => setSelectedCountry(country)}
+              className={"flex min-h-10 items-center gap-2 rounded-xl border-2 border-b-4 px-2.5 py-1.5 font-comic text-sm capitalize text-sky-950 focus-visible:outline focus-visible:outline-4 focus-visible:outline-sky-700 " + (selectedCountry === country ? 'border-amber-500 bg-amber-100' : 'border-sky-100 border-b-sky-300 bg-white hover:bg-sky-100')}
+            >
+              <img src={FLAG_IMAGE_BY_COUNTRY[country]} alt="" className="h-4 w-6 shrink-0 rounded-sm object-cover" />
+              <span className="truncate">{tWord(country)}</span>
+            </button>
+          ))}
+        </nav>
       </div>
 
       {/* Detail card sits on the left, gapped from the top/left edges. Its
@@ -46,13 +66,13 @@ function LearningPage() {
           stretched to fill a fixed box — that stretch used to leave a big
           empty gap under shorter cards. */}
       {selectedCountry && (
-        <div className="absolute left-6 top-32 z-20 w-[calc(100%-3rem)] sm:w-[30%]">
+        <div className="explore-detail absolute z-20">
           <CountryDetailPanel countryName={selectedCountry} onClose={() => setSelectedCountry(null)} />
         </div>
       )}
 
       {/* Bottom nav bar. */}
-      <div className="absolute bottom-4 right-4 z-20 flex items-center gap-3">
+      <div className="absolute bottom-4 right-4 z-20 flex shrink-0 items-center gap-3">
         <button type="button" onClick={() => navigate('/main-menu')} className={BACK_BUTTON}>
           {t('common.back')}
         </button>

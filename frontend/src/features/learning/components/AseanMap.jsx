@@ -32,19 +32,9 @@ const PILL_SHADOW = 'drop-shadow(0 2px 3px rgba(11,61,66,0.35))';
 // near-water rocking animation; everything else uses the sky-height bob —
 // both defined in shared/styles/theme.css.
 const SKY_DECORATIONS = [
-  { kind: 'cloud', emoji: '☁️', top: '8%', left: '30%', size: '4rem', duration: '22s', delay: '0s', driftX: '40px', opacity: 0.85 },
-  { kind: 'cloud', emoji: '☁️', top: '6%', left: '58%', size: '3.4rem', duration: '19s', delay: '1.2s', driftX: '-32px', opacity: 0.8 },
-  { kind: 'cloud', emoji: '☁️', top: '16%', left: '78%', size: '3rem', duration: '24s', delay: '2s', driftX: '30px', opacity: 0.75 },
-  { kind: 'cloud', emoji: '☁️', top: '28%', left: '12%', size: '3.6rem', duration: '20s', delay: '0.6s', driftX: '26px', opacity: 0.8 },
-  { kind: 'cloud', emoji: '☁️', top: '34%', left: '90%', size: '2.6rem', duration: '17s', delay: '2.4s', driftX: '-22px', opacity: 0.7 },
-  { kind: 'cloud', emoji: '☁️', top: '4%', left: '4%', size: '2.4rem', duration: '21s', delay: '1.6s', driftX: '20px', opacity: 0.7 },
-  { kind: 'plane', emoji: '🛩️', top: '20%', left: '42%', size: '2.2rem', duration: '26s', delay: '0.5s', driftX: '60px', rotate: '8deg', opacity: 0.9 },
-  { kind: 'plane', emoji: '🛩️', top: '46%', left: '84%', size: '2rem', duration: '23s', delay: '3s', driftX: '-52px', rotate: '-6deg', opacity: 0.9 },
-  { kind: 'plane', emoji: '🛩️', top: '64%', left: '18%', size: '2.3rem', duration: '28s', delay: '1.4s', driftX: '48px', rotate: '12deg', opacity: 0.9 },
-  { kind: 'boat', emoji: '🚤', top: '56%', left: '68%', size: '2rem', duration: '9s', delay: '1.5s', driftX: '26px', opacity: 0.9 },
-  { kind: 'boat', emoji: '⛵', top: '72%', left: '38%', size: '1.9rem', duration: '11s', delay: '0.8s', driftX: '-22px', opacity: 0.85 },
-  { kind: 'boat', emoji: '🛥️', top: '40%', left: '8%', size: '1.9rem', duration: '10s', delay: '2.6s', driftX: '20px', opacity: 0.85 },
-  { kind: 'boat', emoji: '🚢', top: '82%', left: '58%', size: '2.1rem', duration: '13s', delay: '0.3s', driftX: '-30px', opacity: 0.8 },
+  { kind: 'cloud', emoji: '☁️', top: '12%', left: '4%', size: '2.8rem', duration: '22s', delay: '0s', driftX: '12px', opacity: 0.5 },
+  { kind: 'cloud', emoji: '☁️', top: '8%', left: '90%', size: '2.4rem', duration: '24s', delay: '1s', driftX: '-12px', opacity: 0.5 },
+  { kind: 'boat', emoji: '⛵', top: '78%', left: '88%', size: '1.8rem', duration: '11s', delay: '0s', driftX: '12px', opacity: 0.65 },
 ];
 
 // Base (unzoomed) framing wide enough to read as "the whole world" during the
@@ -100,6 +90,10 @@ function AseanMap({ selectedCountry, onSelectCountry }) {
   const { tWord } = useI18n();
 
   useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setHasIntroed(true);
+      return;
+    }
     const timer = setTimeout(() => setHasIntroed(true), 900);
     return () => clearTimeout(timer);
   }, []);
@@ -130,7 +124,7 @@ function AseanMap({ selectedCountry, onSelectCountry }) {
           projectionConfig={BASE_PROJECTION}
           width={1120}
           height={640}
-          preserveAspectRatio="none"
+          preserveAspectRatio="xMidYMid meet"
           style={{ width: '100%', height: '100%' }}
         >
           <ZoomableGroup center={view.center} zoom={view.zoom} minZoom={1} maxZoom={50} filterZoomEvent={() => false}>
@@ -162,7 +156,8 @@ function AseanMap({ selectedCountry, onSelectCountry }) {
                     // Selected counts as "hovered" too, so the country behind
                     // the open detail card keeps the same highlight look
                     // instead of a separate style.
-                    const isHighlighted = country.name === hoveredCountry || country.name === selectedCountry;
+                    const isSelected = country.name === selectedCountry;
+                    const isHighlighted = country.name === hoveredCountry || isSelected;
                     // Sand-colored halo drawn first, under the green fill —
                     // its stroke is centered on the coastline, so only the
                     // outer half stays visible once the land pass covers the
@@ -177,9 +172,9 @@ function AseanMap({ selectedCountry, onSelectCountry }) {
                       pointerEvents: 'none',
                     };
                     const style = {
-                      fill: aseanFill(isHighlighted),
-                      stroke: isHighlighted ? HOVER_STROKE : ASEAN_STROKE,
-                      strokeWidth: isHighlighted ? 0.6 : 0.4,
+                      fill: isSelected ? '#facc15' : aseanFill(isHighlighted),
+                      stroke: isSelected ? '#854d0e' : isHighlighted ? HOVER_STROKE : ASEAN_STROKE,
+                      strokeWidth: isSelected ? 0.85 : isHighlighted ? 0.6 : 0.4,
                       outline: 'none',
                       cursor: 'pointer',
                       transition: 'fill 120ms ease-out, stroke-width 120ms ease-out',
@@ -189,6 +184,19 @@ function AseanMap({ selectedCountry, onSelectCountry }) {
                         <Geography geography={geo} style={{ default: ringStyle, hover: ringStyle, pressed: ringStyle }} />
                         <Geography
                           geography={geo}
+                          role="button"
+                          tabIndex={0}
+                          aria-label={tWord(country.name)}
+                          aria-pressed={isSelected}
+                          className="map-country"
+                          onFocus={() => setHoveredCountry(country.name)}
+                          onBlur={() => setHoveredCountry(null)}
+                          onKeyDown={(event) => {
+                            if (event.key === 'Enter' || event.key === ' ') {
+                              event.preventDefault();
+                              onSelectCountry(country.name);
+                            }
+                          }}
                           onClick={() => onSelectCountry(country.name)}
                           onMouseEnter={() => setHoveredCountry(country.name)}
                           onMouseLeave={() => setHoveredCountry(null)}
@@ -201,7 +209,8 @@ function AseanMap({ selectedCountry, onSelectCountry }) {
                       to see/tap at this zoom (see TINY_COUNTRIES above) —
                       traces the country's real coastline, just scaled up. */}
                   {Object.entries(TINY_COUNTRIES).map(([name, { coords, path, nudgeY }]) => {
-                    const isHighlighted = name === hoveredCountry || name === selectedCountry;
+                    const isSelected = name === selectedCountry;
+                    const isHighlighted = name === hoveredCountry || isSelected;
                     return (
                       <Marker key={`tiny-${name}`} coordinates={coords}>
                         <g
@@ -211,6 +220,7 @@ function AseanMap({ selectedCountry, onSelectCountry }) {
                           onMouseLeave={() => setHoveredCountry(null)}
                           style={{ cursor: 'pointer', filter: ISLAND_SHADOW }}
                         >
+                          <circle r="22" fill="transparent" />
                           <path d={path} fill="none" stroke={ASEAN_SAND_RING} strokeWidth={3} strokeLinejoin="round" />
                           <path
                             d={path}
@@ -226,7 +236,7 @@ function AseanMap({ selectedCountry, onSelectCountry }) {
                   {/* Pass 4: country name pill — only while that country is
                       hovered, so the map reads clean until you point at one. */}
                   {Object.entries(COUNTRY_LABEL_COORDS).map(([country, coords]) => {
-                    if (country !== hoveredCountry) return null;
+                    if (country !== hoveredCountry && country !== selectedCountry) return null;
                     const label = tWord(country);
                     const hasFlag = Boolean(FLAG_IMAGE_BY_COUNTRY[country]);
                     // Text starts right after the flag (or at the left pad if
@@ -241,7 +251,7 @@ function AseanMap({ selectedCountry, onSelectCountry }) {
                     return (
                       <Marker key={`label-${country}`} coordinates={coords}>
                         <g
-                          transform={`scale(${markerScale}) translate(${-w / 2}, -13)`}
+                          transform={`scale(${markerScale}) translate(${country === 'brunei' ? 20 : country === 'singapore' ? -w - 18 : -w / 2}, ${country === 'brunei' || country === 'singapore' ? 10 : -30})`}
                           style={{ pointerEvents: 'none' }}
                         >
                           <rect
@@ -281,7 +291,7 @@ function AseanMap({ selectedCountry, onSelectCountry }) {
       </div>
 
       {/* Ambient sky layer — clouds/planes/boats drifting over the water.
-          Rendered after (so painted above) the map's SVG land shapes, and
+          Rendered after the map's SVG land shapes, and
           stays fixed on screen (doesn't pan/zoom with the map) like a
           backdrop the player never interacts with. */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">

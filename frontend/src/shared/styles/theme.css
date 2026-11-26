@@ -54,3 +54,18 @@ body {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* The map stays behind every overlay, including the country picker and card. */
+.explore-map { position: absolute; inset: 0; }
+.explore-detail { left: 1rem; right: 1rem; bottom: 10rem; max-height: 42dvh; }
+.explore-detail > div { max-height: inherit; }
+
+.map-country:focus-visible { stroke: #0c4a6e !important; stroke-width: 1.2 !important; }
+@media (min-width: 768px) {
+
+  .explore-detail { top: 6rem; bottom: auto; left: 1.5rem; right: auto; width: clamp(280px, 30vw, 400px); max-height: calc(100dvh - 7.5rem); }
+
+}
+@media (prefers-reduced-motion: reduce) {
+  .explore-page *, .explore-page .rsm-zoomable-group { animation: none !important; transition: none !important; }
+}
