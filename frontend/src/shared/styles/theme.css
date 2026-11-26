@@ -57,7 +57,6 @@ body {
 
 /* The map stays behind every overlay, including the country picker and card. */
 .explore-map { position: absolute; inset: 0; }
-.explore-picker { width: max-content; }
 .explore-detail { left: 1rem; right: 1rem; bottom: 10rem; max-height: 42dvh; }
 .explore-detail > div { max-height: inherit; }
 
