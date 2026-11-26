@@ -8,7 +8,7 @@ import { useI18n } from '../../../shared/i18n/I18nContext';
 // Prolog knowledge base's country_info/2 response, never hardcoded here.
 function InfoRow({ label, value }) {
   return (
-    <p className="font-comic text-lg text-slate-700">
+    <p className="font-comic text-base leading-snug text-slate-700">
       <span className="font-bold text-slate-900">{label}:</span> <span className="capitalize">{value}</span>
     </p>
   );
@@ -17,13 +17,13 @@ function InfoRow({ label, value }) {
 function TagRow({ label, items, tagClassName, tWord }) {
   if (!items?.length) return null;
   return (
-    <div className="mt-1 w-full text-left">
-      <p className="font-comic text-lg text-slate-700">
+    <div className="mt-0.5 w-full text-left">
+      <p className="font-comic text-base leading-snug text-slate-700">
         <span className="font-bold text-slate-900">{label}:</span>
       </p>
-      <div className="mt-2 flex flex-wrap gap-2">
+      <div className="mt-1.5 flex flex-wrap gap-1.5">
         {items.map((item) => (
-          <span key={item} className={`rounded-full px-3 py-1 font-comic text-sm font-bold capitalize ${tagClassName}`}>
+          <span key={item} className={`rounded-full px-2.5 py-0.5 font-comic text-xs font-bold capitalize ${tagClassName}`}>
             {tWord(item)}
           </span>
         ))}
@@ -206,7 +206,7 @@ function CountryDetailPanel({ countryName, onClose }) {
             >
               {/* Front face: general info. */}
               <div
-                className="flex flex-col items-center gap-3 p-6 text-center sm:p-8"
+                className="flex flex-col items-center gap-2 p-5 text-center sm:p-6"
                 style={{ backfaceVisibility: 'hidden', gridArea: '1 / 1' }}
               >
                 {/* card.flag is the raw flag emoji from the knowledge base, but
@@ -215,18 +215,18 @@ function CountryDetailPanel({ countryName, onClose }) {
                 <img
                   src={FLAG_IMAGE_BY_COUNTRY[card.country]}
                   alt=""
-                  className="h-16 w-24 rounded-lg object-cover shadow"
+                  className="h-12 w-20 rounded-lg object-cover shadow"
                 />
-                <h2 className="font-comic text-3xl capitalize text-slate-900">
+                <h2 className="font-comic text-2xl capitalize text-slate-900">
                   {tWord(card.country)}
                 </h2>
                 {card.asean_member === 'yes' && (
-                  <span className="rounded-full bg-sky-100 px-3 py-1 font-comic text-sm font-bold uppercase tracking-wide text-sky-700">
+                  <span className="rounded-full bg-sky-100 px-3 py-0.5 font-comic text-xs font-bold uppercase tracking-wide text-sky-700">
                     {t('detail.aseanMember')}{card.member_since ? ` ${t('detail.since', { year: card.member_since })}` : ''}
                   </span>
                 )}
 
-                <div className="mt-4 flex w-full flex-col gap-2 rounded-2xl bg-slate-50 p-5 text-left">
+                <div className="mt-2 flex w-full flex-col gap-1.5 rounded-2xl bg-slate-50 p-4 text-left">
                   <InfoRow label={t('detail.capital')} value={tWord(card.capital)} />
                   <InfoRow label={t('detail.currency')} value={tWord(card.currency)} />
                   <InfoRow label={t('detail.region')} value={tWord(card.region)} />
@@ -240,7 +240,7 @@ function CountryDetailPanel({ countryName, onClose }) {
                 <button
                   type="button"
                   onClick={() => setFlipped(true)}
-                  className="mt-4 w-full shrink-0 rounded-xl border-b-4 border-sky-600 bg-sky-400 py-3 font-momo text-sm font-bold uppercase tracking-wide text-white [text-shadow:_0_2px_4px_rgb(0_0_0_/_60%)] shadow-[0_3px_0_0_rgb(2,132,199)] transition-transform duration-100 ease-out active:translate-y-[3px] active:border-b-0 active:shadow-none"
+                  className="mt-2 w-full shrink-0 rounded-xl border-b-4 border-sky-600 bg-sky-400 py-2.5 font-momo text-sm font-bold uppercase tracking-wide text-white [text-shadow:_0_2px_4px_rgb(0_0_0_/_60%)] shadow-[0_3px_0_0_rgb(2,132,199)] transition-transform duration-100 ease-out active:translate-y-[3px] active:border-b-0 active:shadow-none"
                 >
                   {t('detail.askAiMore')}
                 </button>

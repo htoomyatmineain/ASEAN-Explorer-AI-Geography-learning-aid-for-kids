@@ -63,7 +63,7 @@ body {
 .map-country:focus-visible { stroke: #0c4a6e !important; stroke-width: 1.2 !important; }
 @media (min-width: 768px) {
 
-  .explore-detail { top: 6rem; bottom: auto; left: 1.5rem; right: auto; width: clamp(280px, 30vw, 400px); max-height: calc(100dvh - 17rem); }
+  .explore-detail { top: 6rem; bottom: auto; left: 1.5rem; right: auto; width: clamp(280px, 30vw, 400px); max-height: calc(100dvh - 7.5rem); }
 
 }
 @media (prefers-reduced-motion: reduce) {
